@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SURE ODDS ARENA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #070b12;
+      color: #ffffff;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="relative min-h-screen text-white">
+
+  <!-- Interactive Canvas with Lamine Yamal & Dynamic Particles -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- PASSWORD LOCK MODAL OVERLAY -->
+  <div id="authOverlay" class="fixed inset-0 bg-slate-950/90 backdrop-blur-2xl z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-md w-full p-8 space-y-6 shadow-2xl text-center">
+      <div class="mx-auto w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-2xl font-black">
+        🔒
+      </div>
+      <div>
+        <h2 class="text-2xl font-black text-white uppercase tracking-wider">Restricted Access</h2>
+        <p class="text-xs text-slate-400 mt-1">Enter your admin PIN code to access the management portal.</p>
+      </div>
+
+      <form id="authForm" class="space-y-4">
+        <div>
+          <input
+            type="password"
+            id="adminPinInput"
+            required
+            placeholder="Enter Admin PIN"
+            class="w-full text-center bg-slate-950 border border-slate-700 rounded-xl px-4 py-3.5 text-white font-mono font-black text-lg tracking-widest focus:border-amber-400 focus:outline-none"
+          />
+        </div>
+        <p id="authError" class="text-xs text-red-400 font-bold hidden">Incorrect Passcode. Try again.</p>
+        <button
+          type="submit"
+          class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 rounded-xl transition shadow-xl shadow-amber-500/20 text-sm uppercase tracking-wider"
+        >
+          Unlock Admin Portal
+        </button>
+      </form>
+      <a href="index.html" class="block text-xs text-slate-500 hover:text-slate-300 font-bold transition">← Return to Main Arena</a>
+    </div>
+  </div>
+
+  <!-- Dashboard Container (Hidden until unlocked) -->
+  <div id="dashboardContent" class="relative z-10 max-w-6xl mx-auto px-4 py-8 filter blur-md pointer-events-none transition-all duration-300">
+    
+    <!-- Top Navigation Header -->
+    <header class="flex items-center justify-between border-b border-slate-700/80 pb-6 mb-8 bg-slate-950/60 backdrop-blur-md p-4 rounded-2xl border">
+      <div class="flex items-center gap-3">
+        <span class="h-3.5 w-3.5 rounded-full bg-emerald-400 animate-pulse shadow-lg shadow-emerald-500/50"></span>
+        <h1 class="font-black text-2xl tracking-wider text-white uppercase">
+          SURE ODDS ARENA <span class="text-amber-400 text-xs ml-2 uppercase font-extrabold px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40">ADMIN DASHBOARD</span>
+        </h1>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="lockPortal()" class="bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs px-3.5 py-2.5 rounded-xl font-extrabold border border-red-500/30 transition">
+          🔒 Lock Portal
+        </button>
+        <a href="index.html" class="bg-slate-800/90 hover:bg-slate-700 text-white text-xs px-4 py-2.5 rounded-xl font-bold border border-slate-600 transition shadow-lg">
+          ← Back to Live Site
+        </a>
+      </div>
+    </header>
+
+    <!-- Admin Grid Layout -->
+    <div class="grid lg:grid-cols-3 gap-8">
+      
+      <!-- Publish Booking Code Form -->
+      <div class="bg-slate-950/80 border border-slate-700/80 backdrop-blur-xl rounded-2xl p-6 shadow-2xl space-y-4">
+        <h2 class="text-xl font-black text-white border-b border-slate-800 pb-3 flex items-center justify-between">
+          Publish New Ticket
+          <span class="text-xs font-semibold text-emerald-400">● Live Publisher</span>
+        </h2>
+        
+        <form id="addTipForm" class="space-y-4">
+          <div>
+            <label class="text-xs text-white uppercase font-bold tracking-wider">Bookmaker Platform</label>
+            <select id="bookmaker" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white font-semibold text-sm focus:border-emerald-400 focus:outline-none">
+              <option value="SPORTYBET">SPORTYBET</option>
+              <option value="1XBET">1XBET</option>
+              <option value="BETWAY">BETWAY</option>
+              <option value="MSPORTS">MSPORTS</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs text-white uppercase font-bold tracking-wider">Ticket Category</label>
+            <select id="tipType" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white font-semibold text-sm focus:border-emerald-400 focus:outline-none">
+              <option value="free">FREE TICKET (Public Access)</option>
+              <option value="vip">HIGH ODDS VIP</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs text-white uppercase font-bold tracking-wider">Total Odds</label>
+            <input type="text" id="odds" required placeholder="e.g. 15.50" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white font-bold text-sm focus:border-emerald-400 focus:outline-none" />
+          </div>
+
+          <div>
+            <label class="text-xs text-white uppercase font-bold tracking-wider">Matches Included</label>
+            <input type="text" id="matchesCount" required placeholder="e.g. 5 Matches" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white font-bold text-sm focus:border-emerald-400 focus:outline-none" />
+          </div>
+
+          <div>
+            <label class="text-xs text-white uppercase font-bold tracking-wider">Booking Code</label>
+            <input type="text" id="code" required placeholder="e.g. GH9021" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 font-mono font-black text-amber-400 text-base focus:border-emerald-400 focus:outline-none tracking-widest" />
+          </div>
+
+          <div>
+            <label class="text-xs text-white uppercase font-bold tracking-wider">Price (GHS for VIP Tickets)</label>
+            <input type="number" id="price" value="1" min="1" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white font-bold text-sm focus:border-emerald-400 focus:outline-none" />
+          </div>
+
+          <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3.5 rounded-xl transition shadow-xl shadow-emerald-500/20 text-sm uppercase tracking-wider">
+            Publish Booking Code Now
+          </button>
+        </form>
+      </div>
+
+      <!-- Published Tickets Management Panel -->
+      <div class="lg:col-span-2 bg-slate-950/80 border border-slate-700/80 backdrop-blur-xl rounded-2xl p-6 shadow-2xl space-y-4">
+        <h2 class="text-xl font-black text-white border-b border-slate-800 pb-3 flex items-center justify-between">
+          Active Live Tickets
+          <span class="text-xs text-slate-300 font-semibold" id="activeCount">0 Tickets</span>
+        </h2>
+        <div id="tipsList" class="space-y-3 max-h-[580px] overflow-y-auto pr-1">
+          <p class="text-slate-300 text-sm font-semibold">Connecting to backend server...</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Canvas Engine Script & Passcode Logic -->
+  <script>
+    // DEFINE YOUR ADMIN PIN HERE (Default: 0241)
+    const ADMIN_PIN = "0241";
+
+    // Authentication Logic
+    const authOverlay = document.getElementById('authOverlay');
+    const dashboardContent = document.getElementById('dashboardContent');
+    const authForm = document.getElementById('authForm');
+    const adminPinInput = document.getElementById('adminPinInput');
+    const authError = document.getElementById('authError');
+
+    // Auto-login check via SessionStorage
+    if (sessionStorage.getItem('adminUnlocked') === 'true') {
+      unlockPortal();
+    }
+
+    authForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (adminPinInput.value === ADMIN_PIN) {
+        sessionStorage.setItem('adminUnlocked', 'true');
+        unlockPortal();
+      } else {
+        authError.classList.remove('hidden');
+        adminPinInput.value = '';
+      }
+    });
+
+    function unlockPortal() {
+      authOverlay.classList.add('hidden');
+      dashboardContent.classList.remove('blur-md', 'pointer-events-none');
+      fetchAdminTips();
+    }
+
+    function lockPortal() {
+      sessionStorage.removeItem('adminUnlocked');
+      location.reload();
+    }
+
+    // Canvas Background Initialization
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const yamalImg = new Image();
+    yamalImg.crossOrigin = "anonymous";
+    yamalImg.src = "./yamal.jpg"; // Set your Yamal image path here
+
+    const particles = Array.from({ length: 50 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      radius: Math.random() * 2 + 1,
+      speedX: (Math.random() - 0.5) * 0.6,
+      speedY: (Math.random() - 0.5) * 0.6,
+      alpha: Math.random() * 0.6 + 0.2
+    }));
+
+    function renderCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (yamalImg.complete && yamalImg.naturalWidth !== 0) {
+        const imgRatio = yamalImg.width / yamalImg.height;
+        const canvasRatio = canvas.width / canvas.height;
+        let drawW, drawH, offsetX, offsetY;
+
+        if (canvasRatio > imgRatio) {
+          drawW = canvas.width;
+          drawH = canvas.width / imgRatio;
+          offsetX = 0;
+          offsetY = (canvas.height - drawH) / 2;
+        } else {
+          drawW = canvas.height * imgRatio;
+          drawH = canvas.height;
+          offsetX = (canvas.width - drawW) / 2;
+          offsetY = 0;
+        }
+
+        ctx.drawImage(yamalImg, offsetX, offsetY, drawW, drawH);
+      }
+
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, 'rgba(7, 11, 18, 0.88)');
+      gradient.addColorStop(0.5, 'rgba(7, 11, 18, 0.78)');
+      gradient.addColorStop(1, 'rgba(7, 11, 18, 0.95)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(16, 185, 129, ${p.alpha})`;
+        ctx.fill();
+      });
+
+      requestAnimationFrame(renderCanvas);
+    }
+
+    yamalImg.onload = () => renderCanvas();
+    renderCanvas();
+
+    // API Backend Calls
+    async function fetchAdminTips() {
+      const container = document.getElementById('tipsList');
+      const activeCount = document.getElementById('activeCount');
+
+      try {
+        const res = await fetch('http://localhost:5002/api/tips');
+        const data = await res.json();
+
+        if (!data || data.length === 0) {
+          activeCount.textContent = '0 Tickets';
+          container.innerHTML = '<p class="text-slate-300 text-sm font-semibold">No booking codes published today.</p>';
+          return;
+        }
+
+        activeCount.textContent = `${data.length} Tickets Active`;
+        container.innerHTML = data.map(tip => `
+          <div class="bg-slate-900/90 border border-slate-700/80 p-4 rounded-xl flex items-center justify-between shadow-lg">
+            <div>
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="text-xs font-black text-white uppercase bg-slate-800 px-2.5 py-0.5 rounded border border-slate-600">${tip.bookmaker}</span>
+                <span class="text-[10px] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider ${tip.type === 'vip' || tip.isVip ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'}">
+                  ${tip.type === 'vip' || tip.isVip ? 'HIGH ODDS VIP' : 'FREE TICKET'}
+                </span>
+              </div>
+              <p class="text-base font-black text-white">
+                ${tip.odds} Odds • Code: <span class="text-amber-400 font-mono tracking-widest text-lg ml-1">${tip.code}</span>
+              </p>
+            </div>
+            <button onclick="deleteTip('${tip._id}')" class="bg-red-500/20 hover:bg-red-500/40 text-red-300 text-xs px-3.5 py-2 rounded-xl border border-red-500/40 font-extrabold transition">
+              Delete
+            </button>
+          </div>
+        `).join('');
+      } catch (err) {
+        container.innerHTML = '<p class="text-red-400 text-sm font-bold">Unable to fetch tickets. Ensure backend is running on port 5002.</p>';
+      }
+    }
+
+    document.getElementById('addTipForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        bookmaker: document.getElementById('bookmaker').value,
+        type: document.getElementById('tipType').value,
+        odds: document.getElementById('odds').value,
+        matchesCount: document.getElementById('matchesCount').value,
+        code: document.getElementById('code').value,
+        price: Number(document.getElementById('price').value)
+      };
+
+      try {
+        const res = await fetch('http://localhost:5002/api/tips', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          document.getElementById('addTipForm').reset();
+          fetchAdminTips();
+        } else {
+          alert('Failed to publish booking code.');
+        }
+      } catch (err) {
+        alert('Server error.');
+      }
+    });
+
+    async function deleteTip(id) {
+      if (!confirm('Are you sure you want to delete this booking code?')) return;
+      try {
+        const res = await fetch(`http://localhost:5002/api/tips/${id}`, { method: 'DELETE' });
+        if (res.ok) fetchAdminTips();
+      } catch (err) {
+        alert('Failed to delete booking code.');
+      }
+    }
+  </script>
+</body>
+</html>

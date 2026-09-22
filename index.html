@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BetCodesPro - Daily Booking Codes & VIP Odds</title>
+    <style>
+        :root {
+            --bg-dark: #07090e;
+            --card-bg: rgba(15, 23, 42, 0.75);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --primary-emerald: #10b981;
+            --emerald-glow: rgba(16, 185, 129, 0.3);
+            --accent-gold: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --radius-xl: 18px;
+            --radius-lg: 12px;
+            --radius-md: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+
+        /* Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(7, 9, 14, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            padding: 16px 20px;
+            margin-bottom: 30px;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 900;
+            font-size: 1.3rem;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-badge {
+            background: var(--primary-emerald);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+        }
+
+        .badge-live {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary-emerald);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary-emerald);
+            box-shadow: 0 0 8px var(--primary-emerald);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        .btn-admin {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid var(--card-border);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-admin:hover {
+            background: #334155;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #ffffff 30%, #a7f3d0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            backdrop-filter: blur(8px);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .card-vip {
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 10px 30px -10px var(--emerald-glow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .bookmaker {
+            background: #1e293b;
+            padding: 4px 10px;
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .tag-vip {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-gold);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .tag-free {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary-emerald);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .odds-val {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .code-box {
+            background: #020617;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 16px;
+        }
+
+        .btn-action {
+            width: 100%;
+            background: var(--primary-emerald);
+            color: #020617;
+            font-weight: 800;
+            padding: 14px;
+            border-radius: var(--radius-lg);
+            border: none;
+            cursor: pointer;
+            margin-top: 16px;
+            font-size: 0.95rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal {
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-xl);
+            max-width: 400px;
+            width: 100%;
+            padding: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+
+        input {
+            width: 100%;
+            background: #020617;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            color: #fff;
+            margin-top: 8px;
+            margin-bottom: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--primary-emerald);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bgCanvas"></canvas>
+
+    <header>
+        <div class="nav-content">
+            <div class="logo">
+                <span class="logo-badge">SOA</span>
+                <span>SURE ODDS ARENA<span style="color:var(--primary-emerald);"></span></span>
+            </div>
+            <div class="badge-live"><span class="dot"></span> MoMo Auto-Unlock</div>
+            <button class="btn-admin" onclick="openAdmin()">Admin Portal</button>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <div class="hero">
+            <h1>TODAY'S BOOKING CODES</h1>
+            <p>FREE & HIGH ODDS VIP TICKETS</p>
+        </div>
+
+        <!-- Main Booking Codes / Tickets Container -->
+        <div id="tipsContainer" class="grid">
+            <!-- Dynamic tips from backend will be injected here automatically -->
+        </div>
+    </div>
+
+    <!-- MoMo Payment Modal -->
+    <div class="modal-overlay" id="payModal">
+        <div class="modal">
+            <h3 style="margin-bottom:12px;">Unlock VIP Code</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">Enter your Mobile Money number to complete payment via Paystack.</p>
+            <label style="font-size:0.75rem; color:var(--text-muted);">MOMO NUMBER</label>
+            <input type="text" placeholder="024 XXX XXXX">
+            <button class="btn-action" onclick="alert('Paystack MoMo trigger simulated successfully!')">Pay via Paystack</button>
+            <button style="width:100%; background:none; border:none; color:var(--text-muted); margin-top:12px; cursor:pointer;" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        async function loadHomeTips() {
+            try {
+                const response = await fetch('/api/tips');
+                const tips = await response.json();
+                
+                const container = document.getElementById('tipsContainer'); 
+                if (!container) return;
+
+                if (tips.length === 0) {
+                    container.innerHTML = '<p style="color:var(--text-muted); text-align:center; grid-column:1/-1; padding:30px 0;">No booking codes available today. Check back soon!</p>';
+                    return;
+                }
+
+                container.innerHTML = tips.map(tip => `
+                    <div class="card ${tip.type === 'vip' || tip.isVip ? 'card-vip' : ''}">
+                        <div class="card-header">
+                            <span class="bookmaker">${tip.bookmaker || 'SPORTYBET'}</span>
+                            <span class="${tip.type === 'vip' || tip.isVip ? 'tag-vip' : 'tag-free'}">
+                                ${tip.type === 'vip' || tip.isVip ? 'HIGH ODDS VIP' : 'FREE TICKET'}
+                            </span>
+                        </div>
+                        <div class="odds-val">${tip.odds} <span style="font-size:1rem; color:var(--text-muted);">odds</span></div>
+                        <div style="color:var(--text-muted); font-size: 0.85rem;">${tip.matchesCount || 'Matches Included'} • Today</div>
+                        
+                        ${tip.type === 'vip' || tip.isVip ? `
+                            <button class="btn-action" onclick="openPayment('${tip.bookmaker}', '${tip.odds}',${tip.price || 1})">
+                                🔒 Unlock Code for ${tip.price || 1} GHS
+                            </button>
+                        ` : `
+                            <div class="code-box">
+                                <div>
+                                    <div style="font-size:0.7rem; color:var(--text-muted);">BOOKING CODE</div>
+                                    <div style="font-family:monospace; font-weight:bold; font-size:1.1rem; color:var(--primary-emerald);">${tip.code}</div>
+                                </div>
+                                <button style="background:none; border:none; color:#fff; cursor:pointer;" onclick="copyCode('${tip.code}')">📋</button>
+                            </div>
+                        `}
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error('Failed to load tickets:', err);
+            }
+        }
+
+        // Run on page load
+        window.addEventListener('DOMContentLoaded', loadHomeTips);
+
+        // Canvas Particle Network
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        for(let i = 0; i < 40; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.4)';
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // UI Interactions
+        function copyCode(code) {
+            navigator.clipboard.writeText(code);
+            alert('Booking code ' + code + ' copied to clipboard!');
+        }
+
+        function openPayment(bookmaker, odds, price) {
+            document.getElementById('payModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('payModal').style.display = 'none';
+        }
+
+        function openAdmin() {
+            window.location.href = 'admin.html';
+        }
+    </script>
+</body>
+</html>
