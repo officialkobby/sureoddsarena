@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SURE_ODDS_ARENA🏆✅</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Paystack Inline JS SDK -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
   <style>
     body {
       background-color: #070b12;
@@ -38,6 +40,9 @@
         </h1>
       </div>
       <div class="flex items-center gap-3"> 
+        <a href="https://wa.me/233241286902?text=Hello%20Sure%20Odds%20Arena%20Admin" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl border border-emerald-400/40 transition flex items-center gap-2 shadow-lg">
+          💬 Chat Admin
+        </a>
         <a href="admin.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs px-3.5 py-2.5 rounded-xl border border-slate-700 transition">
           🔒 Admin
         </a>
@@ -96,6 +101,8 @@
 
   <script>
     const API_BASE_URL = '/api/tips';
+    // Replace with your actual Paystack Public Key when ready (pk_live_...)
+    const PAYSTACK_PUBLIC_KEY = 'pk_live_YOUR_PAYSTACK_PUBLIC_KEY_HERE';
 
     // Canvas Background
     const canvas = document.getElementById('bgCanvas');
@@ -172,7 +179,14 @@
     yamalImg.onload = () => renderCanvas();
     renderCanvas();
 
-    // Fetch tips from server
+    // Helper: Checks if ticket belongs to a VIP/Paid Category
+    function isVipTicket(tip) {
+      if (!tip) return false;
+      const typeStr = (tip.type || '').toLowerCase();
+      return typeStr.includes('vip') || typeStr.includes('combo') || tip.isVip === true;
+    }
+
+    // Fetch and render live tips from API
     async function loadTips() {
       const tipsGrid = document.getElementById('tipsGrid');
       const ticketStatus = document.getElementById('ticketStatus');
@@ -188,35 +202,90 @@
         }
 
         ticketStatus.textContent = `${tips.length} Live Tickets`;
-        tipsGrid.innerHTML = tips.map(tip => `
-          <div class="bg-slate-900/90 border border-slate-700/80 rounded-2xl p-5 shadow-xl space-y-4 relative overflow-hidden backdrop-blur-md">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-black text-white bg-slate-800 px-3 py-1 rounded-lg border border-slate-700 uppercase">${tip.bookmaker}</span>
-              <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${tip.type === 'vip' || tip.isVip ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'}">
-                ${tip.type === 'vip' || tip.isVip ? 'VIP COMBO' : 'FREE TICKET'}
-              </span>
-            </div>
+        tipsGrid.innerHTML = tips.map(tip => {
+          const isVip = isVipTicket(tip);
+          const price = tip.price || 1;
 
-            <div class="space-y-1">
-              <div class="text-3xl font-black text-white tracking-tight">${tip.odds} <span class="text-sm font-semibold text-slate-400">Total Odds</span></div>
-              <p class="text-xs text-slate-400 font-medium">${tip.matchesCount || 'Matches Included'}</p>
-            </div>
-
-            <div class="bg-slate-950/80 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
-              <div>
-                <p class="text-[10px] uppercase font-bold text-slate-500">Booking Code</p>
-                <p class="text-lg font-black font-mono text-amber-400 tracking-widest">${tip.code}</p>
+          return `
+            <div class="bg-slate-900/90 border border-slate-700/80 rounded-2xl p-5 shadow-xl space-y-4 relative overflow-hidden backdrop-blur-md">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-black text-white bg-slate-800 px-3 py-1 rounded-lg border border-slate-700 uppercase">${tip.bookmaker}</span>
+                <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${isVip ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'}">
+                  ${isVip ? 'VIP COMBO' : 'FREE TICKET'}
+                </span>
               </div>
-              <button onclick="navigator.clipboard.writeText('${tip.code}'); alert('Booking code copied: ${tip.code}');" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs px-3 py-1.5 rounded-lg border border-emerald-500/30 font-bold transition">
-                Copy Code
-              </button>
+
+              <div class="space-y-1">
+                <div class="text-3xl font-black text-white tracking-tight">${tip.odds} <span class="text-sm font-semibold text-slate-400">Total Odds</span></div>
+                <p class="text-xs text-slate-400 font-medium">${tip.matchesCount || 'Matches Included'}</p>
+              </div>
+
+              ${isVip ? `
+                <!-- LOCKED VIP CARD -->
+                <div id="vipContainer-${tip._id}" class="bg-amber-500/10 border border-amber-500/30 p-4 rounded-xl flex flex-col items-center justify-center text-center space-y-3">
+                  <div class="flex items-center gap-2 text-amber-400 font-extrabold text-sm uppercase tracking-wider">
+                    <span>🔒 VIP TICKET LOCKED</span>
+                  </div>
+                  <p class="text-xs text-slate-300 font-semibold">Unlock ticket code for <span class="text-amber-400 font-black">GHS ${price}</span></p>
+                  <button onclick="payWithPaystack('${tip._id}', ${price}, '${tip.code}')" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-2.5 rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-amber-500/20">
+                    Unlock Code (GHS ${price})
+                  </button>
+                </div>
+              ` : `
+                <!-- UNLOCKED FREE TICKET -->
+                <div class="bg-slate-950/80 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
+                  <div>
+                    <p class="text-[10px] uppercase font-bold text-slate-500">Booking Code</p>
+                    <p class="text-lg font-black font-mono text-amber-400 tracking-widest">${tip.code}</p>
+                  </div>
+                  <button onclick="navigator.clipboard.writeText('${tip.code}'); alert('Booking code copied:${tip.code}');" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs px-3 py-1.5 rounded-lg border border-emerald-500/30 font-bold transition">
+                    Copy Code
+                  </button>
+                </div>
+              `}
             </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       } catch (err) {
         ticketStatus.textContent = 'Offline';
         tipsGrid.innerHTML = '<p class="text-red-400 text-sm font-semibold col-span-full">Unable to connect to live odds server.</p>';
       }
+    }
+
+    // Trigger Paystack payment window
+    function payWithPaystack(ticketId, amountGHS, actualCode) {
+      const email = prompt("Enter your email address to receive your payment receipt:", "user@gmail.com");
+      if (!email) return;
+
+      const handler = PaystackPop.setup({
+        key: PAYSTACK_PUBLIC_KEY,
+        email: email,
+        amount: amountGHS * 100, // Amount converted to pesewas
+        currency: 'GHS',
+        ref: 'SOA_' + Math.floor((Math.random() * 1000000000) + 1),
+        onClose: function() {
+          alert('Payment window closed.');
+        },
+        callback: function(response) {
+          alert('Payment Successful! Reference: ' + response.reference);
+          // Unlock the card on screen immediately
+          const container = document.getElementById(`vipContainer-${ticketId}`);
+          if (container) {
+            container.className = "bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-xl flex items-center justify-between";
+            container.innerHTML = `
+              <div>
+                <p class="text-[10px] uppercase font-bold text-emerald-400">UNLOCKED BOOKING CODE</p>
+                <p class="text-lg font-black font-mono text-amber-400 tracking-widest">${actualCode}</p>
+              </div>
+              <button onclick="navigator.clipboard.writeText('${actualCode}'); alert('Booking code copied: ${actualCode}');" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs px-3 py-1.5 rounded-lg border border-emerald-500/30 font-bold transition">
+                Copy Code
+              </button>
+            `;
+          }
+        }
+      });
+
+      handler.openIframe();
     }
 
     loadTips();
