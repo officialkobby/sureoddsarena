@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SURE ODDS ARENA</title>
+  <title>SURE ODDS ARENA - ADMIN</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
@@ -97,13 +97,14 @@
             <select id="bookmaker" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white font-semibold text-sm focus:border-emerald-400 focus:outline-none">
               <option value="SPORTYBET">SPORTYBET</option>
               <option value="1XBET">1XBET</option>
-              <option value="MSPORTS">MSPORTS</option>
+              <option value="MSPORT">MSPORT</option>
+              <option value="BETWAY">BETWAY</option>
             </select>
           </div>
 
           <div>
             <label class="text-xs text-white uppercase font-bold tracking-wider">Ticket Category</label>
-            <select id="tipType" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white font-semibold text-sm focus:border-emerald-400 focus:outline-none">
+            <select id="tipType" onchange="togglePriceField()" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white font-semibold text-sm focus:border-emerald-400 focus:outline-none">
               <option value="free">FREE TICKET (Public Access)</option>
               <option value="vip">VIP COMBO</option>
             </select>
@@ -116,15 +117,15 @@
 
           <div>
             <label class="text-xs text-white uppercase font-bold tracking-wider">Booking Code</label>
-            <input type="text" id="code" required placeholder="e.g. GH9021" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 font-mono font-black text-amber-400 text-base focus:border-emerald-400 focus:outline-none tracking-widest" />
+            <input type="text" id="code" required placeholder="e.g. GH9021" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 font-mono font-black text-amber-400 text-base focus:border-emerald-400 focus:outline-none tracking-widest uppercase" />
           </div>
 
-          <div>
-            <label class="text-xs text-white uppercase font-bold tracking-wider">Price (GHS for VIP Tickets)</label>
-            <input type="number" id="price" value="1" min="1" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white font-bold text-sm focus:border-emerald-400 focus:outline-none" />
+          <div id="priceContainer" class="hidden">
+            <label class="text-xs text-amber-400 uppercase font-bold tracking-wider">Price (GHS for VIP Tickets)</label>
+            <input type="number" id="price" value="1" min="1" class="w-full mt-1 bg-slate-900 border border-amber-500/40 rounded-xl px-4 py-3 text-amber-300 font-bold text-sm focus:border-amber-400 focus:outline-none" />
           </div>
 
-          <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3.5 rounded-xl transition shadow-xl shadow-emerald-500/20 text-sm uppercase tracking-wider">
+          <button type="submit" id="submitBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3.5 rounded-xl transition shadow-xl shadow-emerald-500/20 text-sm uppercase tracking-wider">
             Publish Booking Code Now
           </button>
         </form>
@@ -178,6 +179,16 @@
     function lockPortal() {
       sessionStorage.removeItem('adminUnlocked');
       location.reload();
+    }
+
+    function togglePriceField() {
+      const category = document.getElementById('tipType').value;
+      const priceContainer = document.getElementById('priceContainer');
+      if (category === 'vip') {
+        priceContainer.classList.remove('hidden');
+      } else {
+        priceContainer.classList.add('hidden');
+      }
     }
 
     // Canvas Background Initialization
@@ -255,7 +266,7 @@
     yamalImg.onload = () => renderCanvas();
     renderCanvas();
 
-    // API Calls relative to current host
+    // Fetch tips from backend
     async function fetchAdminTips() {
       const container = document.getElementById('tipsList');
       const activeCount = document.getElementById('activeCount');
@@ -294,15 +305,24 @@
       }
     }
 
+    // Publish form submission handler
     document.getElementById('addTipForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'PUBLISHING...';
+
+      const typeValue = document.getElementById('tipType').value;
+      const isVip = typeValue === 'vip';
+
       const payload = {
         bookmaker: document.getElementById('bookmaker').value,
-        type: document.getElementById('tipType').value,
-        odds: document.getElementById('odds').value,
-        matchesCount: document.getElementById('matchesCount').value,
-        code: document.getElementById('code').value,
-        price: Number(document.getElementById('price').value)
+        type: typeValue,
+        isVip: isVip,
+        odds: parseFloat(document.getElementById('odds').value),
+        code: document.getElementById('code').value.trim().toUpperCase(),
+        price: isVip ? Number(document.getElementById('price').value || 1) : 0,
+        matchesCount: 'Matches Included'
       };
 
       try {
@@ -313,13 +333,19 @@
         });
 
         if (res.ok) {
+          alert('Booking code published successfully!');
           document.getElementById('addTipForm').reset();
+          togglePriceField();
           fetchAdminTips();
         } else {
-          alert('Failed to publish booking code.');
+          const errData = await res.json().catch(() => ({}));
+          alert('Failed to publish booking code: ' + (errData.message || 'Server error'));
         }
       } catch (err) {
-        alert('Server error.');
+        alert('Server connection error.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Publish Booking Code Now';
       }
     });
 
@@ -332,6 +358,8 @@
         alert('Failed to delete booking code.');
       }
     }
+
+    togglePriceField();
   </script>
 </body>
 </html>
