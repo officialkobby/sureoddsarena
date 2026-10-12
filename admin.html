@@ -145,16 +145,24 @@
     </div>
   </div>
 
-  <script>
+ <script>
+    // DEFINE YOUR ADMIN PIN HERE (Default: 0241)
     const ADMIN_PIN = "0241";
-    const API_BASE_URL = "/api/tips";
 
+    // API Base URL Configuration (Fixes local vs production mismatch)
+    const RENDER_BASE_URL = 'https://sureoddsarena.onrender.com';
+    const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? `${RENDER_BASE_URL}/api/tips`
+      : '/api/tips';
+
+    // Authentication Logic
     const authOverlay = document.getElementById('authOverlay');
     const dashboardContent = document.getElementById('dashboardContent');
     const authForm = document.getElementById('authForm');
     const adminPinInput = document.getElementById('adminPinInput');
     const authError = document.getElementById('authError');
 
+    // Auto-login check via SessionStorage
     if (sessionStorage.getItem('adminUnlocked') === 'true') {
       unlockPortal();
     }
@@ -179,16 +187,6 @@
     function lockPortal() {
       sessionStorage.removeItem('adminUnlocked');
       location.reload();
-    }
-
-    function togglePriceField() {
-      const category = document.getElementById('tipType').value;
-      const priceContainer = document.getElementById('priceContainer');
-      if (category === 'vip') {
-        priceContainer.classList.remove('hidden');
-      } else {
-        priceContainer.classList.add('hidden');
-      }
     }
 
     // Canvas Background Initialization
@@ -266,7 +264,7 @@
     yamalImg.onload = () => renderCanvas();
     renderCanvas();
 
-    // Fetch tips from backend
+    // Live API Backend Calls
     async function fetchAdminTips() {
       const container = document.getElementById('tipsList');
       const activeCount = document.getElementById('activeCount');
@@ -301,28 +299,20 @@
           </div>
         `).join('');
       } catch (err) {
-        container.innerHTML = '<p class="text-red-400 text-sm font-bold">Unable to fetch tickets. Check server log.</p>';
+        console.error(err);
+        container.innerHTML = '<p class="text-red-400 text-sm font-bold">Unable to fetch tickets. Check live Render backend connection.</p>';
       }
     }
 
-    // Publish form submission handler
     document.getElementById('addTipForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const submitBtn = document.getElementById('submitBtn');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'PUBLISHING...';
-
-      const typeValue = document.getElementById('tipType').value;
-      const isVip = typeValue === 'vip';
-
       const payload = {
         bookmaker: document.getElementById('bookmaker').value,
-        type: typeValue,
-        isVip: isVip,
-        odds: parseFloat(document.getElementById('odds').value),
-        code: document.getElementById('code').value.trim().toUpperCase(),
-        price: isVip ? Number(document.getElementById('price').value || 1) : 0,
-        matchesCount: 'Matches Included'
+        type: document.getElementById('tipType').value,
+        odds: document.getElementById('odds').value,
+        matchesCount: document.getElementById('matchesCount').value,
+        code: document.getElementById('code').value,
+        price: Number(document.getElementById('price').value)
       };
 
       try {
@@ -333,33 +323,34 @@
         });
 
         if (res.ok) {
-          alert('Booking code published successfully!');
           document.getElementById('addTipForm').reset();
-          togglePriceField();
           fetchAdminTips();
+          alert('Booking code published successfully!');
         } else {
-          const errData = await res.json().catch(() => ({}));
-          alert('Failed to publish booking code: ' + (errData.message || 'Server error'));
+          alert('Failed to publish booking code.');
         }
       } catch (err) {
-        alert('Server connection error.');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Publish Booking Code Now';
+        alert('Server error while connecting to Render endpoint.');
       }
     });
 
     async function deleteTip(id) {
       if (!confirm('Are you sure you want to delete this booking code?')) return;
       try {
-        const res = await fetch(`${API_BASE_URL}/${id}`, { method: 'DELETE' });
-        if (res.ok) fetchAdminTips();
+        const deleteUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+          ? `${RENDER_BASE_URL}/api/tips/${id}`
+          : `/api/tips/${id}`;
+
+        const res = await fetch(deleteUrl, { method: 'DELETE' });
+        if (res.ok) {
+          fetchAdminTips();
+        } else {
+          alert('Failed to delete booking code on server.');
+        }
       } catch (err) {
-        alert('Failed to delete booking code.');
+        alert('Server error while deleting code.');
       }
     }
-
-    togglePriceField();
-  </script>
+</script>
 </body>
 </html>
