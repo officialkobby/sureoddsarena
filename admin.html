@@ -149,7 +149,7 @@
     // DEFINE YOUR ADMIN PIN HERE (Default: 0241)
     const ADMIN_PIN = "0241";
 
-    // API Base URL Configuration (Fixes local vs production mismatch)
+    // API Base URL Configuration
     const RENDER_BASE_URL = 'https://sureoddsarena.onrender.com';
     const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
       ? `${RENDER_BASE_URL}/api/tips`
@@ -162,7 +162,6 @@
     const adminPinInput = document.getElementById('adminPinInput');
     const authError = document.getElementById('authError');
 
-    // Auto-login check via SessionStorage
     if (sessionStorage.getItem('adminUnlocked') === 'true') {
       unlockPortal();
     }
@@ -187,6 +186,11 @@
     function lockPortal() {
       sessionStorage.removeItem('adminUnlocked');
       location.reload();
+    }
+
+    // Dummy toggle handler to fix console reference error
+    function togglePriceField() {
+      // Optional: Handle UI changes if you add a price field later
     }
 
     // Canvas Background Initialization
@@ -268,6 +272,7 @@
     async function fetchAdminTips() {
       const container = document.getElementById('tipsList');
       const activeCount = document.getElementById('activeCount');
+      if (!container) return;
 
       try {
         const res = await fetch(API_BASE_URL);
@@ -284,7 +289,7 @@
           <div class="bg-slate-900/90 border border-slate-700/80 p-4 rounded-xl flex items-center justify-between shadow-lg">
             <div>
               <div class="flex items-center gap-2 mb-1.5">
-                <span class="text-xs font-black text-white uppercase bg-slate-800 px-2.5 py-0.5 rounded border border-slate-600">${tip.bookmaker}</span>
+                <span class="text-xs font-black text-white uppercase bg-slate-800 px-2.5 py-0.5 rounded border border-slate-600">${tip.bookmaker || 'SPORTYBET'}</span>
                 <span class="text-[10px] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider ${tip.type === 'vip' || tip.isVip ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'}">
                   ${tip.type === 'vip' || tip.isVip ? 'HIGH ODDS VIP' : 'FREE TICKET'}
                 </span>
@@ -306,13 +311,19 @@
 
     document.getElementById('addTipForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      
+      const typeElement = document.getElementById('tipType');
+      const typeValue = typeElement ? typeElement.value : 'free';
+      const isVip = typeValue === 'vip' || typeValue === 'VIP COMBO';
+
       const payload = {
-        bookmaker: document.getElementById('bookmaker').value,
-        type: document.getElementById('tipType').value,
-        odds: document.getElementById('odds').value,
-        matchesCount: document.getElementById('matchesCount').value,
-        code: document.getElementById('code').value,
-        price: Number(document.getElementById('price').value)
+        bookmaker: document.getElementById('bookmaker') ? document.getElementById('bookmaker').value : 'SPORTYBET',
+        type: isVip ? 'vip' : 'free',
+        isVip: isVip,
+        odds: document.getElementById('odds') ? document.getElementById('odds').value : '1.00',
+        matchesCount: document.getElementById('matchesCount') ? document.getElementById('matchesCount').value : 'Matches Included',
+        code: document.getElementById('code') ? document.getElementById('code').value.trim().toUpperCase() : '',
+        price: document.getElementById('price') ? Number(document.getElementById('price').value) : 1
       };
 
       try {
@@ -322,14 +333,17 @@
           body: JSON.stringify(payload)
         });
 
+        const data = await res.json();
+
         if (res.ok) {
           document.getElementById('addTipForm').reset();
           fetchAdminTips();
           alert('Booking code published successfully!');
         } else {
-          alert('Failed to publish booking code.');
+          alert('Failed to publish: ' + (data.error || 'Server error'));
         }
       } catch (err) {
+        console.error(err);
         alert('Server error while connecting to Render endpoint.');
       }
     });
