@@ -15,11 +15,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve static frontend files (index.html, admin.html, yamal.jpg, etc.)
+// Serve static frontend files (index.html, admin.html, etc.)
 app.use(express.static(__dirname));
 
 // --- MONGODB CONNECTION ---
-const MONGO_URI = process.env.MONGO_URI || "YOUR_MONGODB_ATLAS_CONNECTION_STRING_HERE";
+const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/sureoddsarena";
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log('Connected to MongoDB Database successfully!'))
@@ -30,7 +30,7 @@ const tipSchema = new mongoose.Schema({
   bookmaker: { type: String, required: true },
   type: { type: String, required: true },
   odds: { type: String, required: true },
-  matchesCount: { type: String, required: true },
+  matchesCount: { type: String, default: 'Matches Included' },
   code: { type: String, required: true },
   price: { type: Number, default: 1 },
   createdAt: { type: Date, default: Date.now }
