@@ -9,11 +9,11 @@
     <style>
         :root {
             --bg-dark: #07090e;
-            --card-bg: rgba(15, 23, 42, 0.75);
+            --card-bg: rgba(15, 23, 42, 0.85);
             --card-border: rgba(255, 255, 255, 0.1);
             --primary-emerald: #10b981;
-            --emerald-glow: rgba(16, 185, 129, 0.3);
             --accent-gold: #f59e0b;
+            --accent-blue: #0088cc;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --radius-xl: 18px;
@@ -60,7 +60,7 @@
             position: sticky;
             top: 0;
             z-index: 50;
-            background: rgba(7, 9, 14, 0.8);
+            background: rgba(7, 9, 14, 0.85);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--card-border);
             padding: 16px 20px;
@@ -133,24 +133,23 @@
             font-size: 0.85rem;
             transition: all 0.2s;
             text-decoration: none;
-            display: inline-block;
         }
 
         .btn-admin:hover {
             background: #334155;
         }
 
-        /* Hero */
+        /* Hero Header */
         .hero {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .hero h1 {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             font-weight: 900;
             line-height: 1.15;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             background: linear-gradient(135deg, #ffffff 30%, #a7f3d0 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -158,18 +157,93 @@
 
         .hero p {
             color: var(--text-muted);
-            font-size: 1rem;
-            max-width: 550px;
-            margin: 0 auto;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            font-weight: 700;
         }
 
-        /* Grid & Cards */
-        .grid {
+        /* Center Community Banner */
+        .community-banner {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 40px auto;
+            backdrop-filter: blur(8px);
+        }
+
+        .community-banner h2 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .community-banner p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .community-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-social {
+            padding: 10px 18px;
+            border-radius: var(--radius-lg);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .btn-social:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
+        .btn-whatsapp {
+            background: #25d366;
+            color: #000;
+        }
+
+        .btn-telegram {
+            background: var(--accent-blue);
+            color: #fff;
+        }
+
+        /* Games Layout Left-Aligned Container */
+        .section-header {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .grid-left {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 420px));
+            justify-content: start;
+            gap: 20px;
         }
 
+        /* Card Styles */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -196,7 +270,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .bookmaker {
@@ -244,23 +318,10 @@
             background: #020617;
             border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
-            padding: 14px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-        }
-
-        .btn-action {
-            width: 100%;
-            background: var(--primary-emerald);
-            color: #020617;
-            font-weight: 800;
-            padding: 14px;
-            border-radius: var(--radius-lg);
-            border: none;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: opacity 0.2s;
         }
 
         .btn-vip-action {
@@ -276,7 +337,7 @@
             transition: opacity 0.2s;
         }
 
-        .btn-action:hover, .btn-vip-action:hover {
+        .btn-vip-action:hover {
             opacity: 0.9;
         }
     </style>
@@ -284,6 +345,7 @@
 <body>
     <canvas id="bgCanvas"></canvas>
 
+    <!-- Navigation Header -->
     <header>
         <div class="nav-content">
             <a href="#" class="logo">
@@ -296,32 +358,52 @@
     </header>
 
     <div class="app-container">
+        <!-- Hero Header -->
         <div class="hero">
             <h1>TODAY'S BOOKING CODES</h1>
             <p>FREE & HIGH ODDS VIP TICKETS</p>
         </div>
 
-        <!-- Dynamic Grid Container -->
-        <div id="tipsContainer" class="grid">
-            <p style="text-align:center; color:var(--text-muted); grid-column:1/-1; padding: 40px 0;">Loading today's sure odds...</p>
+        <!-- Center Community & About Us Banner -->
+        <div class="community-banner">
+            <h2>About Sure Odds Arena</h2>
+            <p>We provide accurate sports betting booking codes and high-odds predictions daily. Join our official community groups below for instant match notifications, early booking codes, and VIP tips!</p>
+            <div class="community-buttons">
+                <!-- Replace with your actual WhatsApp & Telegram Group Links -->
+                <a href="https://chat.whatsapp.com/LEbZKKeL4kFUhgE58YVzr?s=cl&p=i&mlu=4&ilr=4&iam=0" target="_blank" class="btn-social btn-whatsapp">
+                    💬 Join WhatsApp Group
+                </a>
+                <a href="https://t.me/OGWgmyD4ubYxZTE0" target="_blank" class="btn-social btn-telegram">
+                    ✈️ Join Telegram Channel
+                </a>
+            </div>
+        </div>
+
+        <!-- Games Section Title -->
+        <div class="section-header">
+            <div class="section-title">
+                <span>📌</span> Today's Available Tickets
+            </div>
+        </div>
+
+        <!-- Games Container Arranged on the Left -->
+        <div id="tipsContainer" class="grid-left">
+            <p style="color:var(--text-muted); font-weight:600; padding:20px 0;">Fetching today's tickets...</p>
         </div>
     </div>
 
 <script>
     // Live Render API Base URL
     const API_BASE_URL = 'https://sureoddsarena.onrender.com';
-    
-    // REPLACE WITH YOUR LIVE PAYSTACK PUBLIC KEY WHEN GOING LIVE
     const PAYSTACK_PUBLIC_KEY = 'pk_live_YOUR_PAYSTACK_PUBLIC_KEY_HERE';
 
-    // Helper to switch base URL for local development vs live Render
     function getApiUrl(endpoint) {
         return (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
             ? `${API_BASE_URL}${endpoint}` 
             : endpoint;
     }
 
-    // Load Tips from Server and Render Cards
+    // Load tips and dynamically render left-aligned cards
     async function loadHomeTips() {
         const container = document.getElementById('tipsContainer'); 
         if (!container) return;
@@ -331,7 +413,7 @@
             const tips = await response.json();
 
             if (!Array.isArray(tips) || tips.length === 0) {
-                container.innerHTML = '<p style="color:var(--text-muted); text-align:center; grid-column:1/-1; padding:40px 0;">No booking codes available today. Check back soon!</p>';
+                container.innerHTML = '<p style="color:var(--text-muted); font-weight:600; padding:20px 0;">No booking codes available today. Check back soon!</p>';
                 return;
             }
 
@@ -378,11 +460,11 @@
 
         } catch (err) {
             console.error('Failed to load home tips:', err);
-            container.innerHTML = '<p style="color:#ef4444; text-align:center; grid-column:1/-1; padding:40px 0;">Unable to connect to live server. Please refresh in a moment.</p>';
+            container.innerHTML = '<p style="color:#ef4444; font-weight:600; padding:20px 0;">Unable to connect to live server. Please refresh in a moment.</p>';
         }
     }
 
-    // Direct MoMo Payment Handler (MTN Mobile Money & Telecel Cash)
+    // Direct MoMo Payment Handler
     async function payWithMoMo(ticketId, price) {
         const phone = prompt("Enter your Mobile Money Number (MTN / Telecel Cash):");
         
@@ -443,7 +525,6 @@
         }
     }
 
-    // Verify Payment with Server
     async function verifyPayment(reference, ticketId) {
         try {
             const verifyUrl = getApiUrl('/api/paystack/verify/' + reference);
@@ -462,10 +543,9 @@
         }
     }
 
-    // Initialize on page load
     document.addEventListener('DOMContentLoaded', loadHomeTips);
 
-    // Canvas Particle Network Background Animation
+    // Canvas Background
     const canvas = document.getElementById('bgCanvas');
     if (canvas) {
         const ctx = canvas.getContext('2d');
@@ -504,7 +584,6 @@
         animate();
     }
 
-    // Utility Actions
     function copyCode(code) {
         navigator.clipboard.writeText(code);
         alert('Booking code ' + code + ' copied to clipboard!');
