@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BetCodesPro - Daily Booking Codes & VIP Odds</title>
+    <title>SURE ODDS ARENA - Daily Booking Codes & VIP Odds</title>
+    <!-- Paystack SDK -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
     <style>
         :root {
             --bg-dark: #07090e;
@@ -80,6 +82,8 @@
             font-weight: 900;
             font-size: 1.3rem;
             letter-spacing: -0.5px;
+            color: #fff;
+            text-decoration: none;
         }
 
         .logo-badge {
@@ -128,6 +132,8 @@
             font-weight: 600;
             font-size: 0.85rem;
             transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .btn-admin:hover {
@@ -157,7 +163,7 @@
             margin: 0 auto;
         }
 
-        /* Grid */
+        /* Grid & Cards */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -170,6 +176,9 @@
             border-radius: var(--radius-xl);
             padding: 24px;
             backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             transition: transform 0.2s, border-color 0.2s;
         }
 
@@ -179,8 +188,8 @@
         }
 
         .card-vip {
-            border-color: rgba(16, 185, 129, 0.4);
-            box-shadow: 0 10px 30px -10px var(--emerald-glow);
+            border-color: rgba(245, 158, 11, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(245, 158, 11, 0.2);
         }
 
         .card-header {
@@ -222,6 +231,13 @@
             font-size: 2.2rem;
             font-weight: 900;
             color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .matches-text {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
         }
 
         .code-box {
@@ -232,7 +248,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 16px;
         }
 
         .btn-action {
@@ -244,52 +259,25 @@
             border-radius: var(--radius-lg);
             border: none;
             cursor: pointer;
-            margin-top: 16px;
             font-size: 0.95rem;
             transition: opacity 0.2s;
         }
 
-        .btn-action:hover {
+        .btn-vip-action {
+            width: 100%;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #000;
+            font-weight: 900;
+            padding: 14px;
+            border-radius: var(--radius-lg);
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-action:hover, .btn-vip-action:hover {
             opacity: 0.9;
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(6px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            padding: 20px;
-        }
-
-        .modal {
-            background: #0f172a;
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-xl);
-            max-width: 400px;
-            width: 100%;
-            padding: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-        }
-
-        input {
-            width: 100%;
-            background: #020617;
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-md);
-            padding: 12px;
-            color: #fff;
-            margin-top: 8px;
-            margin-bottom: 16px;
-            outline: none;
-        }
-
-        input:focus {
-            border-color: var(--primary-emerald);
         }
     </style>
 </head>
@@ -298,10 +286,10 @@
 
     <header>
         <div class="nav-content">
-            <div class="logo">
+            <a href="#" class="logo">
                 <span class="logo-badge">SOA</span>
-                <span>SURE ODDS ARENA<span style="color:var(--primary-emerald);"></span></span>
-            </div>
+                <span>SURE ODDS ARENA</span>
+            </a>
             <div class="badge-live"><span class="dot"></span> MoMo Auto-Unlock</div>
             <button class="btn-admin" onclick="openAdmin()">Admin Portal</button>
         </div>
@@ -313,121 +301,89 @@
             <p>FREE & HIGH ODDS VIP TICKETS</p>
         </div>
 
-        <!-- This MUST be inside your index.html body -->
-<div id="tipsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <!-- Dynamic tips will load here automatically -->
-</div>
-    </div>
-
-    <!-- MoMo Payment Modal -->
-    <div class="modal-overlay" id="payModal">
-        <div class="modal">
-            <h3 style="margin-bottom:12px;">Unlock VIP Code</h3>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">Enter your Mobile Money number to complete payment via Paystack.</p>
-            <label style="font-size:0.75rem; color:var(--text-muted);">MOMO NUMBER</label>
-            <input type="text" placeholder="024 XXX XXXX">
-            <button class="btn-action" onclick="alert('Paystack MoMo trigger simulated successfully!')">Pay via Paystack</button>
-            <button style="width:100%; background:none; border:none; color:var(--text-muted); margin-top:12px; cursor:pointer;" onclick="closeModal()">Cancel</button>
+        <!-- Dynamic Grid Container -->
+        <div id="tipsContainer" class="grid">
+            <p style="text-align:center; color:var(--text-muted); grid-column:1/-1; padding: 40px 0;">Loading today's sure odds...</p>
         </div>
     </div>
-<!-- Include Paystack Inline JS in your <head> if it's not there yet: -->
-<!-- <script src="https://js.paystack.co/v1/inline.js"></script> -->
 
 <script>
     // Live Render API Base URL
     const API_BASE_URL = 'https://sureoddsarena.onrender.com';
     
-    // REPLACE WITH YOUR LIVE PAYSTACK PUBLIC KEY
+    // REPLACE WITH YOUR LIVE PAYSTACK PUBLIC KEY WHEN GOING LIVE
     const PAYSTACK_PUBLIC_KEY = 'pk_live_YOUR_PAYSTACK_PUBLIC_KEY_HERE';
 
-    // Helper to get relative or full backend URL
+    // Helper to switch base URL for local development vs live Render
     function getApiUrl(endpoint) {
         return (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
             ? `${API_BASE_URL}${endpoint}` 
             : endpoint;
     }
 
-    // Load Tips from Server
-async function loadHomeTips() {
-    const container = document.getElementById('tipsContainer'); 
-    if (!container) return;
+    // Load Tips from Server and Render Cards
+    async function loadHomeTips() {
+        const container = document.getElementById('tipsContainer'); 
+        if (!container) return;
 
-    // Live Render API Base URL
-    const PRODUCTION_API_URL = 'https://sureoddsarena.onrender.com';
-    const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-        ? 'http://localhost:5002/api/tips'
-        : `${PRODUCTION_API_URL}/api/tips`;
+        try {
+            const response = await fetch(getApiUrl('/api/tips'));
+            const tips = await response.json();
 
-    try {
-        const response = await fetch(API_URL);
-        const tips = await response.json();
+            if (!Array.isArray(tips) || tips.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted); text-align:center; grid-column:1/-1; padding:40px 0;">No booking codes available today. Check back soon!</p>';
+                return;
+            }
 
-        if (!Array.isArray(tips) || tips.length === 0) {
-            container.innerHTML = '<p class="col-span-full text-center text-slate-400 py-10 font-medium">No booking codes available today. Check back soon!</p>';
-            return;
-        }
+            container.innerHTML = tips.map(function(tip) {
+                const isVip = tip.type === 'vip' || tip.isVip || false;
+                const tipId = tip._id || tip.id || '';
+                const price = tip.price || 20; 
+                const bookmaker = tip.bookmaker || 'SPORTYBET';
+                const matches = tip.matchesCount || 'Matches Included';
+                const odds = tip.odds || '1.00';
+                const code = tip.code || 'N/A';
 
-        container.innerHTML = tips.map(function(tip) {
-            const isVip = tip.type === 'vip' || tip.isVip || false;
-            const tipId = tip._id || tip.id || '';
-            const price = tip.price || 20; 
-            const bookmaker = tip.bookmaker || 'SPORTYBET';
-            const matches = tip.matchesCount || 'Matches Included';
-            const odds = tip.odds || '1.00';
-            const code = tip.code || 'N/A';
-
-            return `
-                <div class="bg-slate-900/90 border ${isVip ? 'border-amber-500/50 shadow-amber-500/10' : 'border-slate-800'} rounded-2xl p-5 shadow-xl flex flex-col justify-between relative overflow-hidden">
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs font-black text-white uppercase bg-slate-800 px-3 py-1 rounded-md border border-slate-700 tracking-wider">
-                                ${bookmaker}
-                            </span>
-                            <span class="text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-wider ${isVip ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'}">
-                                ${isVip ? 'HIGH ODDS VIP' : 'FREE TICKET'}
-                            </span>
-                        </div>
-
-                        <div class="text-3xl font-black text-white mb-1">
-                            ${odds} <span class="text-xs text-slate-400 uppercase tracking-widest font-bold">ODDS</span>
-                        </div>
-                        <div class="text-xs text-slate-400 font-semibold mb-5 flex items-center gap-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full ${isVip ? 'bg-amber-400' : 'bg-emerald-400'}"></span>
-                            ${matches}
-                        </div>
-                    </div>
-
-                    <div class="mt-2">
-                        ${isVip ? `
-                            <button onclick="payWithMoMo('${tipId}',${price})" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black py-3 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
-                                🔒 Unlock Code for ${price} GHS
-                            </button>
-                        ` : `
-                            <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3 flex items-center justify-between">
-                                <div>
-                                    <div class="text-[10px] font-bold text-slate-400 uppercase">Booking Code</div>
-                                    <div class="font-mono text-lg font-black text-emerald-400 tracking-widest">${code}</div>
-                                </div>
-                                <button onclick="copyCode('${code}')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-3 py-1.5 rounded-lg border border-slate-700 transition font-bold">
-                                    Copy 📋
-                                </button>
+                return `
+                    <div class="card ${isVip ? 'card-vip' : ''}">
+                        <div>
+                            <div class="card-header">
+                                <span class="bookmaker">${bookmaker}</span>
+                                <span class="${isVip ? 'tag-vip' : 'tag-free'}">
+                                    ${isVip ? 'HIGH ODDS VIP' : 'FREE TICKET'}
+                                </span>
                             </div>
-                        `}
+                            <div class="odds-val">${odds} <span style="font-size:1rem; color:var(--text-muted); font-weight:600;">ODDS</span></div>
+                            <div class="matches-text">📌 ${matches} • Today</div>
+                        </div>
+                        
+                        <div>
+                            ${isVip ? `
+                                <button class="btn-vip-action" onclick="payWithMoMo('${tipId}',${price})">
+                                    🔒 Unlock Code for ${price} GHS
+                                </button>
+                            ` : `
+                                <div class="code-box">
+                                    <div>
+                                        <div style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">BOOKING CODE</div>
+                                        <div style="font-family:monospace; font-weight:900; font-size:1.2rem; color:var(--primary-emerald); letter-spacing:1px;">${code}</div>
+                                    </div>
+                                    <button style="background:#1e293b; border:1px solid var(--card-border); color:#fff; padding:8px 12px; border-radius:var(--radius-md); cursor:pointer; font-weight:700; font-size:0.8rem;" onclick="copyCode('${code}')">Copy 📋</button>
+                                </div>
+                            `}
+                        </div>
                     </div>
-                </div>
-            `;
-        }).join('');
+                `;
+            }).join('');
 
-    } catch (err) {
-        console.error('Failed to load home tips:', err);
-        container.innerHTML = '<p class="col-span-full text-center text-red-400 py-10 font-bold">Unable to connect to live server.</p>';
+        } catch (err) {
+            console.error('Failed to load home tips:', err);
+            container.innerHTML = '<p style="color:#ef4444; text-align:center; grid-column:1/-1; padding:40px 0;">Unable to connect to live server. Please refresh in a moment.</p>';
+        }
     }
-}
 
-document.addEventListener('DOMContentLoaded', loadHomeTips);
     // Direct MoMo Payment Handler (MTN Mobile Money & Telecel Cash)
     async function payWithMoMo(ticketId, price) {
-        // Prompt user ONLY for their Mobile Money phone number
         const phone = prompt("Enter your Mobile Money Number (MTN / Telecel Cash):");
         
         if (!phone || phone.trim().length < 9) {
@@ -436,11 +392,9 @@ document.addEventListener('DOMContentLoaded', loadHomeTips);
         }
 
         const cleanPhone = phone.replace(/[^0-9]/g, '');
-        // Silent background email (User never sees an email prompt)
         const silentEmail = 'momo_' + cleanPhone + '@sureoddsarena.com';
 
         try {
-            // 1. Initialize Paystack transaction on Render backend
             const initUrl = getApiUrl('/api/paystack/initialize');
             const res = await fetch(initUrl, {
                 method: 'POST',
@@ -460,17 +414,15 @@ document.addEventListener('DOMContentLoaded', loadHomeTips);
                 return;
             }
 
-            // Check if Paystack Inline SDK is loaded
             if (typeof PaystackPop === 'undefined') {
-                alert('Paystack SDK failed to load. Please ensure https://js.paystack.co/v1/inline.js is included in your <head>.');
+                alert('Paystack SDK failed to load. Please check your internet connection.');
                 return;
             }
 
-            // 2. Open Paystack MoMo Modal
             const handler = PaystackPop.setup({
                 key: PAYSTACK_PUBLIC_KEY,
                 email: silentEmail,
-                amount: Math.round(price * 100), // Pesewas conversion
+                amount: Math.round(price * 100),
                 currency: 'GHS',
                 ref: initData.data.reference,
                 channels: ['mobile_money'],
@@ -479,7 +431,6 @@ document.addEventListener('DOMContentLoaded', loadHomeTips);
                     alert('Payment cancelled.');
                 },
                 callback: function(response) {
-                    // 3. Verify reference on Render server upon PIN entry
                     verifyPayment(response.reference, ticketId);
                 }
             });
@@ -498,10 +449,10 @@ document.addEventListener('DOMContentLoaded', loadHomeTips);
             const verifyUrl = getApiUrl('/api/paystack/verify/' + reference);
             const res = await fetch(verifyUrl);
             const data = await res.json();
-
+            
             if (data.status === 'success') {
                 alert('Payment successful! Booking code unlocked.');
-                location.reload(); // Refresh page to display unlocked VIP tip
+                location.reload(); 
             } else {
                 alert('Payment verification failed.');
             }
@@ -511,10 +462,10 @@ document.addEventListener('DOMContentLoaded', loadHomeTips);
         }
     }
 
-    // Run on page load
-    window.addEventListener('DOMContentLoaded', loadHomeTips);
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', loadHomeTips);
 
-    // Canvas Particle Network Animation
+    // Canvas Particle Network Background Animation
     const canvas = document.getElementById('bgCanvas');
     if (canvas) {
         const ctx = canvas.getContext('2d');
@@ -538,7 +489,7 @@ document.addEventListener('DOMContentLoaded', loadHomeTips);
 
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'rgba(16, 185, 129, 0.4)';
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.3)';
             particles.forEach(p => {
                 p.x += p.vx;
                 p.y += p.vy;
@@ -553,7 +504,7 @@ document.addEventListener('DOMContentLoaded', loadHomeTips);
         animate();
     }
 
-    // UI Interactions
+    // Utility Actions
     function copyCode(code) {
         navigator.clipboard.writeText(code);
         alert('Booking code ' + code + ' copied to clipboard!');
