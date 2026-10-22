@@ -348,6 +348,173 @@
         .btn-vip-action:hover {
             opacity: 0.9;
         }
+
+        /* Center Payment Modal Styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .payment-modal {
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .modal-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .network-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .network-card {
+            background: #020617;
+            border: 2px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .network-card.selected {
+            border-color: var(--primary-emerald);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .network-badge-mtn {
+            background: #ffcc00;
+            color: #000;
+            font-weight: 900;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .network-badge-telecel {
+            background: #e2001a;
+            color: #fff;
+            font-weight: 900;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .network-badge-at {
+            background: #0055a5;
+            color: #fff;
+            font-weight: 900;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .network-name {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .phone-input-container {
+            margin-bottom: 20px;
+        }
+
+        .phone-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .phone-input {
+            width: 100%;
+            background: #020617;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 14px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .phone-input:focus {
+            border-color: var(--primary-emerald);
+        }
+
+        .btn-modal-pay {
+            width: 100%;
+            background: var(--primary-emerald);
+            color: #020617;
+            font-weight: 900;
+            padding: 14px;
+            border-radius: var(--radius-lg);
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-modal-pay:hover {
+            opacity: 0.9;
+        }
+
+        .btn-modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -377,15 +544,13 @@
             <h2>About Sure Odds Arena</h2>
             <p>We provide accurate sports betting booking codes and high-odds predictions daily. Join our general groups for free tips or unlock the official **VIP WhatsApp Group** for premium daily winning slips!</p>
             <div class="community-buttons">
-                <!-- Replace with your actual free group links -->
                 <a href="https://chat.whatsapp.com/your-free-group-link" target="_blank" class="btn-social btn-whatsapp">
                     💬 Free WhatsApp
                 </a>
                 <a href="https://t.me/your-telegram-channel" target="_blank" class="btn-social btn-telegram">
                     ✈️ Free Telegram
                 </a>
-                <!-- VIP Group Locked Button -->
-                <button onclick="unlockVipGroup()" class="btn-social btn-vip-group">
+                <button onclick="openPaymentModal('VIP_GROUP_MEMBERSHIP', 100, true)" class="btn-social btn-vip-group">
                     🔒 Join VIP Group (100 GHS)
                 </button>
             </div>
@@ -404,13 +569,50 @@
         </div>
     </div>
 
+    <!-- Center Custom MoMo Payment Modal -->
+    <div id="paymentModalOverlay" class="modal-overlay">
+        <div class="payment-modal">
+            <button class="btn-modal-close" onclick="closePaymentModal()">✕</button>
+            <div class="modal-title">Select MoMo Network</div>
+            <div id="modalAmountSubtitle" class="modal-subtitle">Choose network and enter number to unlock</div>
+
+            <!-- Network Selection Cards -->
+            <div class="network-selector">
+                <div id="netMtn" class="network-card selected" onclick="selectNetwork('mtn')">
+                    <span class="network-badge-mtn">MTN</span>
+                    <span class="network-name">MoMo</span>
+                </div>
+                <div id="netTelecel" class="network-card" onclick="selectNetwork('telecel')">
+                    <span class="network-badge-telecel">Telecel</span>
+                    <span class="network-name">Cash</span>
+                </div>
+                <div id="netAt" class="network-card" onclick="selectNetwork('at')">
+                    <span class="network-badge-at">AT</span>
+                    <span class="network-name">Money</span>
+                </div>
+            </div>
+
+            <div class="phone-input-container">
+                <label class="phone-label">Mobile Money Phone Number</label>
+                <input type="tel" id="momoPhoneInput" class="phone-input" placeholder="024 XXX XXXX" maxlength="10">
+            </div>
+
+            <button onclick="processMoMoCheckout()" class="btn-modal-pay">
+                Pay Now via Paystack
+            </button>
+        </div>
+    </div>
+
 <script>
     // Live Render API Base URL
     const API_BASE_URL = 'https://sureoddsarena.onrender.com';
     const PAYSTACK_PUBLIC_KEY = 'pk_live_YOUR_PAYSTACK_PUBLIC_KEY_HERE';
-    
-    // REPLACE THIS WITH YOUR PRIVATE VIP WHATSAPP GROUP LINK
     const VIP_WHATSAPP_LINK = 'https://chat.whatsapp.com/https://chat.whatsapp.com/G9z8uMSw8E2CKIHXadGViX?s=cl&p=i&mlu=4&ilr=4';
+
+    let currentCheckoutTicketId = null;
+    let currentCheckoutPrice = 0;
+    let currentIsVipGroup = false;
+    let selectedNetwork = 'mtn';
 
     function getApiUrl(endpoint) {
         return (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
@@ -418,17 +620,45 @@
             : endpoint;
     }
 
-    // Unlock VIP Group Function via 100 GHS Paystack MoMo
-    async function unlockVipGroup() {
-        const phone = prompt("Enter your Mobile Money Number (MTN / Telecel Cash) to unlock VIP Group Access:");
+    // Modal Control & Network Switching
+    function openPaymentModal(ticketId, price, isVipGroup = false) {
+        currentCheckoutTicketId = ticketId;
+        currentCheckoutPrice = price;
+        currentIsVipGroup = isVipGroup;
         
-        if (!phone || phone.trim().length < 9) {
-            alert("Please enter a valid MoMo phone number to proceed.");
+        document.getElementById('modalAmountSubtitle').textContent = `Amount to Pay: GHS ${price}`;
+        document.getElementById('paymentModalOverlay').classList.add('active');
+    }
+
+    function closePaymentModal() {
+        document.getElementById('paymentModalOverlay').classList.remove('active');
+        document.getElementById('momoPhoneInput').value = '';
+    }
+
+    function selectNetwork(network) {
+        selectedNetwork = network;
+        document.getElementById('netMtn').classList.remove('selected');
+        document.getElementById('netTelecel').classList.remove('selected');
+        document.getElementById('netAt').classList.remove('selected');
+
+        if (network === 'mtn') document.getElementById('netMtn').classList.add('selected');
+        if (network === 'telecel') document.getElementById('netTelecel').classList.add('selected');
+        if (network === 'at') document.getElementById('netAt').classList.add('selected');
+    }
+
+    // Modal Checkout Handler
+    async function processMoMoCheckout() {
+        const phoneInput = document.getElementById('momoPhoneInput').value.trim();
+        
+        if (!phoneInput || phoneInput.length < 9) {
+            alert("Please enter a valid Mobile Money phone number.");
             return;
         }
 
-        const cleanPhone = phone.replace(/[^0-9]/g, '');
-        const silentEmail = 'vip_group_' + cleanPhone + '@sureoddsarena.com';
+        const cleanPhone = phoneInput.replace(/[^0-9]/g, '');
+        const silentEmail = 'momo_' + cleanPhone + '@sureoddsarena.com';
+
+        closePaymentModal();
 
         try {
             const initUrl = getApiUrl('/api/paystack/initialize');
@@ -438,8 +668,9 @@
                 body: JSON.stringify({
                     email: silentEmail,
                     phone: cleanPhone,
-                    amount: 100, // Fixed 100 GHS for VIP Group
-                    ticketId: 'VIP_GROUP_MEMBERSHIP'
+                    amount: currentCheckoutPrice,
+                    ticketId: currentCheckoutTicketId,
+                    network: selectedNetwork
                 })
             });
 
@@ -458,43 +689,47 @@
             const handler = PaystackPop.setup({
                 key: PAYSTACK_PUBLIC_KEY,
                 email: silentEmail,
-                amount: 10000, // 100 GHS in pesewas
+                amount: Math.round(currentCheckoutPrice * 100),
                 currency: 'GHS',
                 ref: initData.data.reference,
                 channels: ['mobile_money'],
                 phone: cleanPhone,
                 onClose: function() {
-                    alert('VIP Group unlock payment cancelled.');
+                    alert('Payment cancelled.');
                 },
                 callback: function(response) {
-                    verifyVipGroupPayment(response.reference);
+                    verifyPayment(response.reference);
                 }
             });
 
             handler.openIframe();
 
         } catch (err) {
-            console.error('VIP Group payment initialization error:', err);
+            console.error('Payment initialization error:', err);
             alert('Failed to connect to payment server. Try again.');
         }
     }
 
-    // Verify VIP Group Payment
-    async function verifyVipGroupPayment(reference) {
+    async function verifyPayment(reference) {
         try {
             const verifyUrl = getApiUrl('/api/paystack/verify/' + reference);
             const res = await fetch(verifyUrl);
             const data = await res.json();
             
             if (data.status === 'success') {
-                alert('Payment of 100 GHS Successful! Redirecting you to the VIP WhatsApp Group...');
-                window.open(VIP_WHATSAPP_LINK, '_blank');
+                if (currentIsVipGroup) {
+                    alert('Payment of 100 GHS Successful! Redirecting you to the VIP WhatsApp Group...');
+                    window.open(VIP_WHATSAPP_LINK, '_blank');
+                } else {
+                    alert('Payment successful! Booking code unlocked.');
+                    location.reload(); 
+                }
             } else {
-                alert('Payment verification failed. Please contact admin if charged.');
+                alert('Payment verification failed.');
             }
         } catch (err) {
             console.error('Payment verification error:', err);
-            alert('Error verifying VIP Group transaction.');
+            alert('Error verifying transaction.');
         }
     }
 
@@ -536,7 +771,7 @@
                         
                         <div>
                             ${isVip ? `
-                                <button class="btn-vip-action" onclick="payWithMoMo('${tipId}',${price})">
+                                <button class="btn-vip-action" onclick="openPaymentModal('${tipId}',${price}, false)">
                                     🔒 Unlock Code for ${price} GHS
                                 </button>
                             ` : `
@@ -559,88 +794,9 @@
         }
     }
 
-    // Direct MoMo Payment Handler for Individual Tickets
-    async function payWithMoMo(ticketId, price) {
-        const phone = prompt("Enter your Mobile Money Number (MTN / Telecel Cash):");
-        
-        if (!phone || phone.trim().length < 9) {
-            alert("Please enter a valid MoMo phone number to proceed.");
-            return;
-        }
-
-        const cleanPhone = phone.replace(/[^0-9]/g, '');
-        const silentEmail = 'momo_' + cleanPhone + '@sureoddsarena.com';
-
-        try {
-            const initUrl = getApiUrl('/api/paystack/initialize');
-            const res = await fetch(initUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: silentEmail,
-                    phone: cleanPhone,
-                    amount: price,
-                    ticketId: ticketId
-                })
-            });
-
-            const initData = await res.json();
-
-            if (!initData.status) {
-                alert('Could not start payment: ' + (initData.error || initData.message || 'Server error'));
-                return;
-            }
-
-            if (typeof PaystackPop === 'undefined') {
-                alert('Paystack SDK failed to load. Please check your internet connection.');
-                return;
-            }
-
-            const handler = PaystackPop.setup({
-                key: PAYSTACK_PUBLIC_KEY,
-                email: silentEmail,
-                amount: Math.round(price * 100),
-                currency: 'GHS',
-                ref: initData.data.reference,
-                channels: ['mobile_money'],
-                phone: cleanPhone,
-                onClose: function() {
-                    alert('Payment cancelled.');
-                },
-                callback: function(response) {
-                    verifyPayment(response.reference, ticketId);
-                }
-            });
-
-            handler.openIframe();
-
-        } catch (err) {
-            console.error('Payment initialization error:', err);
-            alert('Failed to connect to payment server. Try again.');
-        }
-    }
-
-    async function verifyPayment(reference, ticketId) {
-        try {
-            const verifyUrl = getApiUrl('/api/paystack/verify/' + reference);
-            const res = await fetch(verifyUrl);
-            const data = await res.json();
-            
-            if (data.status === 'success') {
-                alert('Payment successful! Booking code unlocked.');
-                location.reload(); 
-            } else {
-                alert('Payment verification failed.');
-            }
-        } catch (err) {
-            console.error('Payment verification error:', err);
-            alert('Error verifying transaction.');
-        }
-    }
-
     document.addEventListener('DOMContentLoaded', loadHomeTips);
 
-    // Canvas Background
+    // Canvas Background Animation
     const canvas = document.getElementById('bgCanvas');
     if (canvas) {
         const ctx = canvas.getContext('2d');
