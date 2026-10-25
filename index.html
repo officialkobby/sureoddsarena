@@ -14,6 +14,7 @@
             --primary-color: #10b981;
             --primary-glow: rgba(16, 185, 129, 0.3);
             --accent-gold: #f59e0b;
+            --accent-blue: #0088cc;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --radius-xl: 18px;
@@ -21,7 +22,6 @@
             --radius-md: 8px;
         }
 
-        /* Theme variants */
         body.theme-gold { --primary-color: #f59e0b; --primary-glow: rgba(245, 158, 11, 0.3); }
         body.theme-blue { --primary-color: #3b82f6; --primary-glow: rgba(59, 130, 246, 0.3); }
 
@@ -59,7 +59,6 @@
             padding: 0 20px 60px;
         }
 
-        /* Live Winner Ticker Bar */
         .winner-ticker {
             background: rgba(16, 185, 129, 0.1);
             border-bottom: 1px solid rgba(16, 185, 129, 0.2);
@@ -74,7 +73,6 @@
             z-index: 60;
         }
 
-        /* Header */
         header {
             position: sticky;
             top: 0;
@@ -146,7 +144,6 @@
             text-decoration: none;
         }
 
-        /* Hero & Countdown Timer */
         .hero {
             text-align: center;
             margin-bottom: 25px;
@@ -175,7 +172,6 @@
             margin-top: 10px;
         }
 
-        /* Center Community Banner */
         .community-banner {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -228,7 +224,6 @@
         .btn-vip-group { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
         .btn-guide { background: #1e293b; color: #fff; border: 1px solid var(--card-border); }
 
-        /* Filter Tabs & History Toggle */
         .controls-row {
             display: flex;
             justify-content: space-between;
@@ -273,7 +268,6 @@
             cursor: pointer;
         }
 
-        /* Grid Layout */
         .grid-left {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 400px));
@@ -315,7 +309,6 @@
         .btn-vip-action { width: 100%; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 900; padding: 13px; border-radius: var(--radius-lg); border: none; cursor: pointer; font-size: 0.92rem; }
         .btn-vip-action:hover { opacity: 0.9; }
 
-        /* Modals (Payment & Guide) */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -367,15 +360,15 @@
     </style>
 </head>
 <body class="theme-emerald">
-    <!-- Canvas Particle Network Background -->
+    <!-- Particle Canvas Network Background -->
     <canvas id="bgCanvas"></canvas>
 
-    <!-- Live Winner Ticker Bar -->
+    <!-- Live Winner Activity Ticker -->
     <div class="winner-ticker" id="winnerTicker">
         🔥 Loading recent winners activity...
     </div>
 
-    <!-- Navigation Header -->
+    <!-- Sticky Navigation Header -->
     <header>
         <div class="nav-content">
             <a href="#" class="logo">
@@ -394,7 +387,7 @@
     </header>
 
     <div class="app-container">
-        <!-- Hero Header & Countdown Timer -->
+        <!-- Hero Title & Live Countdown Timer -->
         <div class="hero">
             <h1>TODAY'S BOOKING CODES</h1>
             <p>FREE & HIGH ODDS VIP TICKETS</p>
@@ -403,7 +396,7 @@
             </div>
         </div>
 
-        <!-- Center Community & About Banner -->
+        <!-- Center Community Banner -->
         <div class="community-banner">
             <h2>Join Our Winning Betting Community</h2>
             <p>We provide accurate sports betting booking codes daily. Join our channels or unlock the official **VIP WhatsApp Group** for premium daily slips!</p>
@@ -415,7 +408,7 @@
             </div>
         </div>
 
-        <!-- Filter Tabs & History Toggle -->
+        <!-- Filter Controls & History Toggle -->
         <div class="controls-row">
             <div class="filter-tabs">
                 <button class="tab-btn active" onclick="filterBookmaker('ALL')">All Codes</button>
@@ -426,13 +419,13 @@
             <button class="history-toggle" onclick="toggleHistoryMode()" id="historyToggleBtn">📁 View Yesterday's Won History</button>
         </div>
 
-        <!-- Games Grid Container -->
+        <!-- Dynamic Game Grid -->
         <div id="tipsContainer" class="grid-left">
             <p style="color:var(--text-muted); font-weight:600; padding:20px 0;">Fetching today's tickets...</p>
         </div>
     </div>
 
-    <!-- Payment Modal -->
+    <!-- MoMo Payment Modal -->
     <div id="paymentModalOverlay" class="modal-overlay">
         <div class="modal-box">
             <button class="btn-close" onclick="closePaymentModal()">✕</button>
@@ -510,59 +503,53 @@
             ? `${API_BASE_URL}${endpoint}` : endpoint;
     }
 
-    // Canvas Background Particle Animation
+    // 1. Canvas Background Animation
     const canvas = document.getElementById('bgCanvas');
     if (canvas) {
         const ctx = canvas.getContext('2d');
         let particles = [];
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resize);
         resize();
-
         for (let i = 0; i < 40; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5
-            });
+            particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5 });
         }
-
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = 'rgba(16, 185, 129, 0.3)';
             particles.forEach(p => {
-                p.x += p.vx;
-                p.y += p.vy;
+                p.x += p.vx; p.y += p.vy;
                 if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
                 if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
             });
             requestAnimationFrame(animate);
         }
         animate();
     }
 
-    // Countdown Timer Logic
+    // 2. Countdown Timer Logic (Synced with admin.html)
     function startCountdown() {
-        let timeLeft = 3 * 3600 + 45 * 60 + 12;
         setInterval(() => {
-            if (timeLeft > 0) timeLeft--;
+            const targetTime = localStorage.getItem('soa_countdown_target');
+            let timeLeft = 0;
+
+            if (targetTime) {
+                timeLeft = Math.max(0, Math.floor((parseInt(targetTime) - new Date().getTime()) / 1000));
+            } else {
+                timeLeft = 3 * 3600 + 45 * 60 + 12; // Default timer fallback
+            }
+
             let h = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
             let m = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
             let s = (timeLeft % 60).toString().padStart(2, '0');
+            
             const timerEl = document.getElementById('countdownTimer');
-            if (timerEl) timerEl.textContent = `${h}h ${m}m ${s}s`;
+            if (timerEl) timerEl.textContent = `${h}h ${m}s ${s}s`;
         }, 1000);
     }
 
-    // Recent Winners Ticker
+    // 3. Recent Winners Ticker
     const winners = [
         "🎉 Kofi from Kumasi just unlocked 20 Odds VIP (SportyBet)",
         "💰 Yaw from Accra successfully joined the VIP WhatsApp Group",
@@ -579,12 +566,8 @@
     }
     setInterval(rotateTicker, 4000);
 
-    // Theme Switcher
-    function setTheme(theme) {
-        document.body.className = 'theme-' + theme;
-    }
+    function setTheme(theme) { document.body.className = 'theme-' + theme; }
 
-    // Modal Control Functions
     function openPaymentModal(ticketId, price, isVipGroup = false) {
         currentCheckoutTicketId = ticketId;
         currentCheckoutPrice = price;
@@ -630,6 +613,7 @@
         }
     }
 
+    // 4. Render Tips with Live WON Updates & Filtering
     function renderTips() {
         const container = document.getElementById('tipsContainer');
         if (!container) return;
@@ -637,10 +621,11 @@
         let displayTips = [...allLoadedTips];
 
         if (showingHistory) {
-            displayTips = [
-                { _id: 'hist1', bookmaker: 'SPORTYBET', odds: '15.50', matchesCount: '10 Matches', code: 'WON778', type: 'vip', won: true },
-                { _id: 'hist2', bookmaker: '1XBET', odds: '8.20', matchesCount: '5 Matches', code: 'WON992', type: 'free', won: true }
-            ];
+            // Show only tickets marked as WON by admin
+            displayTips = displayTips.filter(t => t.won === true);
+        } else {
+            // Show active tickets (not won yet)
+            displayTips = displayTips.filter(t => !t.won);
         }
 
         if (currentFilter !== 'ALL') {
@@ -648,7 +633,9 @@
         }
 
         if (!Array.isArray(displayTips) || displayTips.length === 0) {
-            container.innerHTML = '<p style="color:var(--text-muted); font-weight:600; padding:20px 0;">No booking codes available in this category.</p>';
+            container.innerHTML = `<p style="color:var(--text-muted); font-weight:600; padding:20px 0;">
+                ${showingHistory ? 'No winning history recorded yet.' : 'No active booking codes available right now.'}
+            </p>`;
             return;
         }
 
@@ -681,7 +668,7 @@
                                     <div style="font-size:0.7rem; color:#34d399; font-weight:700; text-transform:uppercase;">WON RESULT CODE</div>
                                     <div style="font-family:monospace; font-weight:900; font-size:1.2rem; color:#34d399; letter-spacing:1px;">${code}</div>
                                 </div>
-                                <span style="color:#34d399; font-weight:800; font-size:0.8rem;">SUCCESS</span>
+                                <button style="background:#1e293b; border:1px solid var(--card-border); color:#fff; padding:8px 12px; border-radius:var(--radius-md); cursor:pointer; font-weight:700; font-size:0.8rem;" onclick="copyCode('${code}')">Copy 📋</button>
                             </div>
                         ` : (isVip ? `
                             <button class="btn-vip-action" onclick="openPaymentModal('${tipId}', ${price}, false)">
@@ -702,6 +689,7 @@
         }).join('');
     }
 
+    // 5. Paystack & MoMo Verification
     async function processMoMoCheckout() {
         const phone = document.getElementById('momoPhoneInput').value.trim();
         if (!phone || phone.length < 9) { alert("Please enter a valid phone number."); return; }
