@@ -11,15 +11,19 @@
             --bg-dark: #07090e;
             --card-bg: rgba(15, 23, 42, 0.85);
             --card-border: rgba(255, 255, 255, 0.1);
-            --primary-emerald: #10b981;
+            --primary-color: #10b981;
+            --primary-glow: rgba(16, 185, 129, 0.3);
             --accent-gold: #f59e0b;
-            --accent-blue: #0088cc;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --radius-xl: 18px;
             --radius-lg: 12px;
             --radius-md: 8px;
         }
+
+        /* Theme variants */
+        body.theme-gold { --primary-color: #f59e0b; --primary-glow: rgba(245, 158, 11, 0.3); }
+        body.theme-blue { --primary-color: #3b82f6; --primary-glow: rgba(59, 130, 246, 0.3); }
 
         * {
             box-sizing: border-box;
@@ -55,6 +59,21 @@
             padding: 0 20px 60px;
         }
 
+        /* Live Winner Ticker Bar */
+        .winner-ticker {
+            background: rgba(16, 185, 129, 0.1);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 8px 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            z-index: 60;
+        }
+
         /* Header */
         header {
             position: sticky;
@@ -64,7 +83,7 @@
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--card-border);
             padding: 16px 20px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .nav-content {
@@ -81,85 +100,79 @@
             gap: 10px;
             font-weight: 900;
             font-size: 1.3rem;
-            letter-spacing: -0.5px;
             color: #fff;
             text-decoration: none;
         }
 
         .logo-badge {
-            background: var(--primary-emerald);
+            background: var(--primary-color);
             color: #000;
             padding: 4px 8px;
             border-radius: var(--radius-md);
             font-size: 1rem;
         }
 
-        .badge-live {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--primary-emerald);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
+        .nav-right {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 10px;
         }
 
-        .dot {
-            width: 8px;
-            height: 8px;
+        .theme-switcher {
+            display: flex;
+            background: #1e293b;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            padding: 3px;
+        }
+
+        .theme-btn {
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            background: var(--primary-emerald);
-            box-shadow: 0 0 8px var(--primary-emerald);
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.4; }
-            50% { opacity: 1; }
-            100% { opacity: 0.4; }
+            border: none;
+            cursor: pointer;
         }
 
         .btn-admin {
             background: #1e293b;
             color: #f8fafc;
             border: 1px solid var(--card-border);
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: var(--radius-md);
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.85rem;
-            transition: all 0.2s;
+            font-size: 0.82rem;
             text-decoration: none;
         }
 
-        .btn-admin:hover {
-            background: #334155;
-        }
-
-        /* Hero Header */
+        /* Hero & Countdown Timer */
         .hero {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .hero h1 {
-            font-size: 2.5rem;
+            font-size: 2.3rem;
             font-weight: 900;
-            line-height: 1.15;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #ffffff 30%, #a7f3d0 100%);
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #ffffff 30%, var(--primary-color) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .hero p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            letter-spacing: 1px;
-            font-weight: 700;
+        .countdown-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--accent-gold);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            margin-top: 10px;
         }
 
         /* Center Community Banner */
@@ -170,93 +183,109 @@
             padding: 24px;
             text-align: center;
             max-width: 750px;
-            margin: 0 auto 40px auto;
+            margin: 0 auto 30px auto;
             backdrop-filter: blur(8px);
         }
 
         .community-banner h2 {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 800;
             color: #fff;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .community-banner p {
             color: var(--text-muted);
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             line-height: 1.5;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .community-buttons {
             display: flex;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .btn-social {
-            padding: 12px 20px;
+            padding: 10px 16px;
             border-radius: var(--radius-lg);
             font-weight: 800;
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             cursor: pointer;
             border: none;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: transform 0.2s;
         }
 
-        .btn-social:hover {
-            transform: translateY(-2px);
-            opacity: 0.95;
-        }
+        .btn-social:hover { transform: translateY(-2px); }
+        .btn-whatsapp { background: #25d366; color: #000; }
+        .btn-telegram { background: var(--accent-blue); color: #fff; }
+        .btn-vip-group { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
+        .btn-guide { background: #1e293b; color: #fff; border: 1px solid var(--card-border); }
 
-        .btn-whatsapp {
-            background: #25d366;
-            color: #000;
-        }
-
-        .btn-telegram {
-            background: var(--accent-blue);
-            color: #fff;
-        }
-
-        .btn-vip-group {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #000;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
-        }
-
-        /* Games Layout Left-Aligned Container */
-        .section-header {
+        /* Filter Tabs & History Toggle */
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
             margin-bottom: 20px;
         }
 
-        .section-title {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: #fff;
+        .filter-tabs {
             display: flex;
-            align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
 
+        .tab-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: #000;
+            border-color: var(--primary-color);
+        }
+
+        .history-toggle {
+            background: #1e293b;
+            color: #fff;
+            border: 1px solid var(--card-border);
+            padding: 6px 14px;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Grid Layout */
         .grid-left {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 420px));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 400px));
             justify-content: start;
             gap: 20px;
         }
 
-        /* Card Styles */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: var(--radius-xl);
-            padding: 24px;
+            padding: 22px;
             backdrop-filter: blur(8px);
             display: flex;
             flex-direction: column;
@@ -264,98 +293,32 @@
             transition: transform 0.2s, border-color 0.2s;
         }
 
-        .card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .card-vip {
-            border-color: rgba(245, 158, 11, 0.4);
-            box-shadow: 0 10px 30px -10px rgba(245, 158, 11, 0.2);
-        }
+        .card:hover { transform: translateY(-3px); border-color: rgba(255, 255, 255, 0.2); }
+        .card-vip { border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 10px 30px -10px rgba(245, 158, 11, 0.2); }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
-        .bookmaker {
-            background: #1e293b;
-            padding: 4px 10px;
-            border-radius: var(--radius-md);
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
+        .bookmaker { background: #1e293b; padding: 4px 10px; border-radius: var(--radius-md); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+        .tag-vip { background: rgba(245, 158, 11, 0.1); color: var(--accent-gold); border: 1px solid rgba(245, 158, 11, 0.2); padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
+        .tag-free { background: rgba(16, 185, 129, 0.1); color: var(--primary-color); padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
+        .tag-won { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #34d399; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 900; }
 
-        .tag-vip {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--accent-gold);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
+        .odds-val { font-size: 2rem; font-weight: 900; color: #fff; margin-bottom: 4px; }
+        .matches-text { color: var(--text-muted); font-size: 0.82rem; margin-bottom: 16px; }
 
-        .tag-free {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--primary-emerald);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
+        .code-box { background: #020617; border: 1px solid var(--card-border); border-radius: var(--radius-lg); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+        .btn-vip-action { width: 100%; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 900; padding: 13px; border-radius: var(--radius-lg); border: none; cursor: pointer; font-size: 0.92rem; }
+        .btn-vip-action:hover { opacity: 0.9; }
 
-        .odds-val {
-            font-size: 2.2rem;
-            font-weight: 900;
-            color: #fff;
-            margin-bottom: 4px;
-        }
-
-        .matches-text {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-bottom: 20px;
-        }
-
-        .code-box {
-            background: #020617;
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .btn-vip-action {
-            width: 100%;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #000;
-            font-weight: 900;
-            padding: 14px;
-            border-radius: var(--radius-lg);
-            border: none;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: opacity 0.2s;
-        }
-
-        .btn-vip-action:hover {
-            opacity: 0.9;
-        }
-
-        /* Center Payment Modal Styling */
+        /* Modals (Payment & Guide) */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            inset: 0;
             background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(10px);
             z-index: 1000;
@@ -368,157 +331,48 @@
             transition: opacity 0.3s ease;
         }
 
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
 
-        .payment-modal {
+        .modal-box {
             background: #0f172a;
             border: 1px solid var(--card-border);
             border-radius: var(--radius-xl);
-            padding: 28px;
-            max-width: 440px;
+            padding: 26px;
+            max-width: 420px;
             width: 100%;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
             position: relative;
         }
 
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: #fff;
-            margin-bottom: 6px;
-            text-align: center;
-        }
+        .modal-title { font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 6px; text-align: center; }
+        .modal-subtitle { font-size: 0.82rem; color: var(--text-muted); text-align: center; margin-bottom: 18px; }
 
-        .modal-subtitle {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-align: center;
-            margin-bottom: 20px;
-        }
+        .network-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+        .network-card { background: #020617; border: 2px solid var(--card-border); border-radius: var(--radius-lg); padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+        .network-card.selected { border-color: var(--primary-color); background: rgba(16, 185, 129, 0.1); }
+        .network-badge-mtn { background: #ffcc00; color: #000; font-weight: 900; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; }
+        .network-badge-telecel { background: #e2001a; color: #fff; font-weight: 900; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; }
+        .network-badge-at { background: #0055a5; color: #fff; font-weight: 900; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; }
 
-        .network-selector {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
+        .phone-input { width: 100%; background: #020617; border: 1px solid var(--card-border); border-radius: var(--radius-lg); padding: 12px; color: #fff; font-size: 0.95rem; font-weight: 600; outline: none; margin-bottom: 16px; }
+        .phone-input:focus { border-color: var(--primary-color); }
 
-        .network-card {
-            background: #020617;
-            border: 2px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 12px 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .network-card.selected {
-            border-color: var(--primary-emerald);
-            background: rgba(16, 185, 129, 0.1);
-        }
-
-        .network-badge-mtn {
-            background: #ffcc00;
-            color: #000;
-            font-weight: 900;
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 4px;
-        }
-
-        .network-badge-telecel {
-            background: #e2001a;
-            color: #fff;
-            font-weight: 900;
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 4px;
-        }
-
-        .network-badge-at {
-            background: #0055a5;
-            color: #fff;
-            font-weight: 900;
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 4px;
-        }
-
-        .network-name {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .phone-input-container {
-            margin-bottom: 20px;
-        }
-
-        .phone-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            display: block;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-
-        .phone-input {
-            width: 100%;
-            background: #020617;
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 14px;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: 600;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .phone-input:focus {
-            border-color: var(--primary-emerald);
-        }
-
-        .btn-modal-pay {
-            width: 100%;
-            background: var(--primary-emerald);
-            color: #020617;
-            font-weight: 900;
-            padding: 14px;
-            border-radius: var(--radius-lg);
-            border: none;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .btn-modal-pay:hover {
-            opacity: 0.9;
-        }
-
-        .btn-modal-close {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
+        .btn-modal-pay { width: 100%; background: var(--primary-color); color: #020617; font-weight: 900; padding: 13px; border-radius: var(--radius-lg); border: none; font-size: 0.95rem; cursor: pointer; }
+        .btn-close { position: absolute; top: 14px; right: 14px; background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; }
+        
+        .guide-step { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
+        .guide-num { background: var(--primary-color); color: #000; font-weight: 900; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; }
+        .guide-text h4 { font-size: 0.88rem; color: #fff; margin-bottom: 2px; }
+        .guide-text p { font-size: 0.78rem; color: var(--text-muted); }
     </style>
 </head>
-<body>
+<body class="theme-emerald">
     <canvas id="bgCanvas"></canvas>
+
+    <!-- 2. Live Winner Ticker Bar -->
+    <div class="winner-ticker" id="winnerTicker">
+        🔥 Loading recent winners activity...
+    </div>
 
     <!-- Navigation Header -->
     <header>
@@ -527,88 +381,125 @@
                 <span class="logo-badge">SOA</span>
                 <span>SURE ODDS ARENA</span>
             </a>
-            <div class="badge-live"><span class="dot"></span> MoMo Auto-Unlock</div>
-            <button class="btn-admin" onclick="openAdmin()">Admin Portal</button>
+            <div class="nav-right">
+                <!-- 6. Neon Theme Accent Switcher -->
+                <div class="theme-switcher">
+                    <button class="theme-btn" style="background:#10b981;" onclick="setTheme('emerald')" title="Emerald"></button>
+                    <button class="theme-btn" style="background:#f59e0b;" onclick="setTheme('gold')" title="Gold"></button>
+                    <button class="theme-btn" style="background:#3b82f6;" onclick="setTheme('blue')" title="Blue"></button>
+                </div>
+                <button class="btn-admin" onclick="openAdmin()">Admin Portal</button>
+            </div>
         </div>
     </header>
 
     <div class="app-container">
-        <!-- Hero Header -->
+        <!-- Hero Header & 1. Countdown Timer -->
         <div class="hero">
             <h1>TODAY'S BOOKING CODES</h1>
             <p>FREE & HIGH ODDS VIP TICKETS</p>
+            <div class="countdown-box">
+                ⏳ New Odds Refresh In: <span id="countdownTimer">03h 45m 12s</span>
+            </div>
         </div>
 
-        <!-- Center Community & About Us Banner -->
+        <!-- Center Community & About Banner -->
         <div class="community-banner">
-            <h2>About Sure Odds Arena</h2>
-            <p>We provide accurate sports betting booking codes and high-odds predictions daily. Join our general groups for free tips or unlock the official **VIP WhatsApp Group** for premium daily winning slips!</p>
+            <h2>Join Our Winning Betting Community</h2>
+            <p>We provide accurate sports betting booking codes daily. Join our channels or unlock the official **VIP WhatsApp Group** for premium daily slips!</p>
             <div class="community-buttons">
-                <a href="https://chat.whatsapp.com/I6BBPnVsTHcAIfvkDExlCO" target="_blank" class="btn-social btn-whatsapp">
-                    💬 Free WhatsApp
-                </a>
-                <a href="https://t.me/your-telegram-channel" target="_blank" class="btn-social btn-telegram">
-                    ✈️ Free Telegram
-                </a>
-                <button onclick="openPaymentModal('VIP_GROUP_MEMBERSHIP', 100, true)" class="btn-social btn-vip-group">
-                    🔒 Join VIP Group (100 GHS)
-                </button>
+                <a href="https://chat.whatsapp.com/I6BBPnVsTHcAIfvkDExlCO" target="_blank" class="btn-social btn-whatsapp">💬 Free WhatsApp</a>
+                <a href="https://t.me/your-telegram" target="_blank" class="btn-social btn-telegram">✈️ Free Telegram</a>
+                <button onclick="openPaymentModal('VIP_GROUP_MEMBERSHIP', 100, true)" class="btn-social btn-vip-group">🔒 Join VIP Group (100 GHS)</button>
+                <button onclick="openGuideModal()" class="btn-social btn-guide">❓ How It Works</button>
             </div>
         </div>
 
-        <!-- Games Section Title -->
-        <div class="section-header">
-            <div class="section-title">
-                <span>📌</span> Today's Available Tickets
+        <!-- 4. Filter Tabs & 3. History Toggle -->
+        <div class="controls-row">
+            <div class="filter-tabs">
+                <button class="tab-btn active" onclick="filterBookmaker('ALL')">All Codes</button>
+                <button class="tab-btn" onclick="filterBookmaker('SPORTYBET')">SportyBet</button>
+                <button class="tab-btn" onclick="filterBookmaker('1XBET')">1xBet</button>
+                <button class="tab-btn" onclick="filterBookmaker('BETWAY')">Betway</button>
             </div>
+            <button class="history-toggle" onclick="toggleHistoryMode()" id="historyToggleBtn">📁 View Yesterday's Won History</button>
         </div>
 
-        <!-- Games Container Arranged on the Left -->
+        <!-- Games Grid Container -->
         <div id="tipsContainer" class="grid-left">
             <p style="color:var(--text-muted); font-weight:600; padding:20px 0;">Fetching today's tickets...</p>
         </div>
     </div>
 
-    <!-- Center Custom MoMo Payment Modal -->
+    <!-- Payment Modal -->
     <div id="paymentModalOverlay" class="modal-overlay">
-        <div class="payment-modal">
-            <button class="btn-modal-close" onclick="closePaymentModal()">✕</button>
+        <div class="modal-box">
+            <button class="btn-close" onclick="closePaymentModal()">✕</button>
             <div class="modal-title">Select MoMo Network</div>
-            <div id="modalAmountSubtitle" class="modal-subtitle">Choose network and enter number to unlock</div>
+            <div id="modalAmountSubtitle" class="modal-subtitle">Choose network and enter phone number</div>
 
-            <!-- Network Selection Cards -->
             <div class="network-selector">
                 <div id="netMtn" class="network-card selected" onclick="selectNetwork('mtn')">
                     <span class="network-badge-mtn">MTN</span>
-                    <span class="network-name">MoMo</span>
+                    <span style="font-size:0.7rem; font-weight:700;">MoMo</span>
                 </div>
                 <div id="netTelecel" class="network-card" onclick="selectNetwork('telecel')">
                     <span class="network-badge-telecel">Telecel</span>
-                    <span class="network-name">Cash</span>
+                    <span style="font-size:0.7rem; font-weight:700;">Cash</span>
                 </div>
                 <div id="netAt" class="network-card" onclick="selectNetwork('at')">
                     <span class="network-badge-at">AT</span>
-                    <span class="network-name">Money</span>
+                    <span style="font-size:0.7rem; font-weight:700;">Money</span>
                 </div>
             </div>
 
-            <div class="phone-input-container">
-                <label class="phone-label">Mobile Money Phone Number</label>
-                <input type="tel" id="momoPhoneInput" class="phone-input" placeholder="024 XXX XXXX" maxlength="10">
-            </div>
+            <label style="font-size:0.72rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:6px; text-transform:uppercase;">MoMo Phone Number</label>
+            <input type="tel" id="momoPhoneInput" class="phone-input" placeholder="024 XXX XXXX" maxlength="10">
 
-            <button onclick="processMoMoCheckout()" class="btn-modal-pay">
-                Pay Now via Paystack
-            </button>
+            <button onclick="processMoMoCheckout()" class="btn-modal-pay">Pay Now via Paystack</button>
+        </div>
+    </div>
+
+    <!-- 5. "How It Works" Guide Modal -->
+    <div id="guideModalOverlay" class="modal-overlay">
+        <div class="modal-box">
+            <button class="btn-close" onclick="closeGuideModal()">✕</button>
+            <div class="modal-title" style="margin-bottom:16px;">How It Works</div>
+            
+            <div class="guide-step">
+                <div class="guide-num">1</div>
+                <div class="guide-text">
+                    <h4>Choose Your Ticket</h4>
+                    <p>Select any free booking code or unlock high-odds VIP slips.</p>
+                </div>
+            </div>
+            <div class="guide-step">
+                <div class="guide-num">2</div>
+                <div class="guide-text">
+                    <h4>Select Your MoMo Network</h4>
+                    <p>Choose MTN, Telecel, or AirtelTigo (AT) and enter your mobile number.</p>
+                </div>
+            </div>
+            <div class="guide-step">
+                <div class="guide-num">3</div>
+                <div class="guide-text">
+                    <h4>Authorize PIN & Get Access</h4>
+                    <p>Approve the prompt on your phone. VIP group links unlock instantly!</p>
+                </div>
+            </div>
+            <button onclick="closeGuideModal()" class="btn-modal-pay" style="margin-top:10px;">Got It!</button>
         </div>
     </div>
 
 <script>
-    // Live Render API Base URL
     const API_BASE_URL = 'https://sureoddsarena.onrender.com';
     const PAYSTACK_PUBLIC_KEY = 'pk_live_YOUR_PAYSTACK_PUBLIC_KEY_HERE';
-    const VIP_WHATSAPP_LINK = 'https://chat.whatsapp.com/BYChhpMVlPlAET2J6xWu6W'';
+    const VIP_WHATSAPP_LINK = 'https://chat.whatsapp.com/BYChhpMVlPlAET2J6xWu6W';
 
+    let allLoadedTips = [];
+    let currentFilter = 'ALL';
+    let showingHistory = false;
     let currentCheckoutTicketId = null;
     let currentCheckoutPrice = 0;
     let currentIsVipGroup = false;
@@ -616,233 +507,216 @@
 
     function getApiUrl(endpoint) {
         return (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-            ? `${API_BASE_URL}${endpoint}` 
-            : endpoint;
+            ? `${API_BASE_URL}${endpoint}` : endpoint;
     }
 
-    // Modal Control & Network Switching
+    // 1. Countdown Timer Logic
+    function startCountdown() {
+        let timeLeft = 3 * 3600 + 45 * 60 + 12; // 3h 45m 12s
+        setInterval(() => {
+            if (timeLeft > 0) timeLeft--;
+            let h = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
+            let m = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
+            let s = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('countdownTimer').textContent = `${h}h ${m}m ${s}s`;
+        }, 1000);
+    }
+
+    // 2. Recent Winners Ticker
+    const winners = [
+        "🎉 Kofi from Kumasi just unlocked 20 Odds VIP (SportyBet)",
+        "💰 Yaw from Accra successfully joined the VIP WhatsApp Group",
+        "🔥 Ama from Takoradi copied a Free Booking Code",
+        "🚀 Esi from Tamale unlocked High Odds VIP Slip"
+    ];
+    let tickerIndex = 0;
+    function rotateTicker() {
+        const ticker = document.getElementById('winnerTicker');
+        ticker.textContent = winners[tickerIndex];
+        tickerIndex = (tickerIndex + 1) % winners.length;
+    }
+    setInterval(rotateTicker, 4000);
+
+    // 6. Theme Switcher
+    function setTheme(theme) {
+        document.body.className = 'theme-' + theme;
+    }
+
+    // Modal Control Functions
     function openPaymentModal(ticketId, price, isVipGroup = false) {
         currentCheckoutTicketId = ticketId;
         currentCheckoutPrice = price;
         currentIsVipGroup = isVipGroup;
-        
         document.getElementById('modalAmountSubtitle').textContent = `Amount to Pay: GHS ${price}`;
         document.getElementById('paymentModalOverlay').classList.add('active');
     }
+    function closePaymentModal() { document.getElementById('paymentModalOverlay').classList.remove('active'); }
+    function openGuideModal() { document.getElementById('guideModalOverlay').classList.add('active'); }
+    function closeGuideModal() { document.getElementById('guideModalOverlay').classList.remove('active'); }
 
-    function closePaymentModal() {
-        document.getElementById('paymentModalOverlay').classList.remove('active');
-        document.getElementById('momoPhoneInput').value = '';
+    function selectNetwork(net) {
+        selectedNetwork = net;
+        ['netMtn', 'netTelecel', 'netAt'].forEach(id => document.getElementById(id).classList.remove('selected'));
+        if (net === 'mtn') document.getElementById('netMtn').classList.add('selected');
+        if (net === 'telecel') document.getElementById('netTelecel').classList.add('selected');
+        if (net === 'at') document.getElementById('netAt').classList.add('selected');
     }
 
-    function selectNetwork(network) {
-        selectedNetwork = network;
-        document.getElementById('netMtn').classList.remove('selected');
-        document.getElementById('netTelecel').classList.remove('selected');
-        document.getElementById('netAt').classList.remove('selected');
-
-        if (network === 'mtn') document.getElementById('netMtn').classList.add('selected');
-        if (network === 'telecel') document.getElementById('netTelecel').classList.add('selected');
-        if (network === 'at') document.getElementById('netAt').classList.add('selected');
+    // 4. Filter Bookmaker Function
+    function filterBookmaker(bookmaker) {
+        currentFilter = bookmaker;
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        renderTips();
     }
 
-    // Modal Checkout Handler
-    async function processMoMoCheckout() {
-        const phoneInput = document.getElementById('momoPhoneInput').value.trim();
-        
-        if (!phoneInput || phoneInput.length < 9) {
-            alert("Please enter a valid Mobile Money phone number.");
+    // 3. Toggle History Mode (Yesterday's Won Tips)
+    function toggleHistoryMode() {
+        showingHistory = !showingHistory;
+        const btn = document.getElementById('historyToggleBtn');
+        btn.textContent = showingHistory ? "⚡ View Today's Live Codes" : "📁 View Yesterday's Won History";
+        renderTips();
+    }
+
+    // Load Tips from API
+    async function loadHomeTips() {
+        const container = document.getElementById('tipsContainer');
+        if (!container) return;
+        try {
+            const res = await fetch(getApiUrl('/api/tips'));
+            allLoadedTips = await res.json();
+            renderTips();
+        } catch (err) {
+            container.innerHTML = '<p style="color:#ef4444; font-weight:600; padding:20px 0;">Unable to connect to server.</p>';
+        }
+    }
+
+    // Render Function incorporating filters and history
+    function renderTips() {
+        const container = document.getElementById('tipsContainer');
+        if (!container) return;
+
+        let displayTips = [...allLoadedTips];
+
+        if (showingHistory) {
+            // Mock history data for demonstration of past won games
+            displayTips = [
+                { _id: 'hist1', bookmaker: 'SPORTYBET', odds: '15.50', matchesCount: '10 Matches', code: 'WON778', type: 'vip', won: true },
+                { _id: 'hist2', bookmaker: '1XBET', odds: '8.20', matchesCount: '5 Matches', code: 'WON992', type: 'free', won: true }
+            ];
+        }
+
+        if (currentFilter !== 'ALL') {
+            displayTips = displayTips.filter(t => (t.bookmaker || 'SPORTYBET').toUpperCase() === currentFilter);
+        }
+
+        if (!Array.isArray(displayTips) || displayTips.length === 0) {
+            container.innerHTML = '<p style="color:var(--text-muted); font-weight:600; padding:20px 0;">No booking codes available in this category.</p>';
             return;
         }
 
-        const cleanPhone = phoneInput.replace(/[^0-9]/g, '');
-        const silentEmail = 'momo_' + cleanPhone + '@sureoddsarena.com';
+        container.innerHTML = displayTips.map(tip => {
+            const isVip = tip.type === 'vip' || tip.isVip || false;
+            const tipId = tip._id || tip.id || '';
+            const price = tip.price || 20;
+            const bookmaker = tip.bookmaker || 'SPORTYBET';
+            const matches = tip.matchesCount || 'Matches Included';
+            const odds = tip.odds || '1.00';
+            const code = tip.code || 'N/A';
 
+            return `
+                <div class="card ${isVip && !tip.won ? 'card-vip' : ''}">
+                    <div>
+                        <div class="card-header">
+                            <span class="bookmaker">${bookmaker}</span>
+                            <span class="${tip.won ? 'tag-won' : (isVip ? 'tag-vip' : 'tag-free')}">
+                                ${tip.won ? '✅ WON' : (isVip ? 'HIGH ODDS VIP' : 'FREE TICKET')}
+                            </span>
+                        </div>
+                        <div class="odds-val">${odds} <span style="font-size:1rem; color:var(--text-muted); font-weight:600;">ODDS</span></div>
+                        <div class="matches-text">📌 ${matches} • ${tip.won ? 'Yesterday' : 'Today'}</div>
+                    </div>
+                    
+                    <div>
+                        ${tip.won ? `
+                            <div class="code-box" style="border-color:#34d399;">
+                                <div>
+                                    <div style="font-size:0.7rem; color:#34d399; font-weight:700; text-transform:uppercase;">WON RESULT CODE</div>
+                                    <div style="font-family:monospace; font-weight:900; font-size:1.2rem; color:#34d399; letter-spacing:1px;">${code}</div>
+                                </div>
+                                <span style="color:#34d399; font-weight:800; font-size:0.8rem;">SUCCESS</span>
+                            </div>
+                        ` : (isVip ? `
+                            <button class="btn-vip-action" onclick="openPaymentModal('${tipId}', ${price}, false)">
+                                🔒 Unlock Code for ${price} GHS
+                            </button>
+                        ` : `
+                            <div class="code-box">
+                                <div>
+                                    <div style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">BOOKING CODE</div>
+                                    <div style="font-family:monospace; font-weight:900; font-size:1.2rem; color:var(--primary-color); letter-spacing:1px;">${code}</div>
+                                </div>
+                                <button style="background:#1e293b; border:1px solid var(--card-border); color:#fff; padding:8px 12px; border-radius:var(--radius-md); cursor:pointer; font-weight:700; font-size:0.8rem;" onclick="copyCode('${code}')">Copy 📋</button>
+                            </div>
+                        `)}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Paystack Checkout
+    async function processMoMoCheckout() {
+        const phone = document.getElementById('momoPhoneInput').value.trim();
+        if (!phone || phone.length < 9) { alert("Please enter a valid phone number."); return; }
+        const cleanPhone = phone.replace(/[^0-9]/g, '');
+        const silentEmail = 'momo_' + cleanPhone + '@sureoddsarena.com';
         closePaymentModal();
 
         try {
-            const initUrl = getApiUrl('/api/paystack/initialize');
-            const res = await fetch(initUrl, {
+            const res = await fetch(getApiUrl('/api/paystack/initialize'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: silentEmail,
-                    phone: cleanPhone,
-                    amount: currentCheckoutPrice,
-                    ticketId: currentCheckoutTicketId,
-                    network: selectedNetwork
-                })
+                body: JSON.stringify({ email: silentEmail, phone: cleanPhone, amount: currentCheckoutPrice, ticketId: currentCheckoutTicketId, network: selectedNetwork })
             });
-
-            const initData = await res.json();
-
-            if (!initData.status) {
-                alert('Could not start payment: ' + (initData.error || initData.message || 'Server error'));
-                return;
-            }
-
-            if (typeof PaystackPop === 'undefined') {
-                alert('Paystack SDK failed to load. Please check your internet connection.');
-                return;
-            }
+            const data = await res.json();
+            if (!data.status) { alert('Transaction error.'); return; }
 
             const handler = PaystackPop.setup({
-                key: PAYSTACK_PUBLIC_KEY,
-                email: silentEmail,
-                amount: Math.round(currentCheckoutPrice * 100),
-                currency: 'GHS',
-                ref: initData.data.reference,
-                channels: ['mobile_money'],
-                phone: cleanPhone,
-                onClose: function() {
-                    alert('Payment cancelled.');
-                },
-                callback: function(response) {
-                    verifyPayment(response.reference);
-                }
+                key: PAYSTACK_PUBLIC_KEY, email: silentEmail, amount: Math.round(currentCheckoutPrice * 100), currency: 'GHS',
+                ref: data.data.reference, channels: ['mobile_money'], phone: cleanPhone,
+                callback: function(resRef) { verifyPayment(resRef.reference); }
             });
-
             handler.openIframe();
-
-        } catch (err) {
-            console.error('Payment initialization error:', err);
-            alert('Failed to connect to payment server. Try again.');
-        }
+        } catch (err) { alert('Connection error.'); }
     }
 
     async function verifyPayment(reference) {
         try {
-            const verifyUrl = getApiUrl('/api/paystack/verify/' + reference);
-            const res = await fetch(verifyUrl);
+            const res = await fetch(getApiUrl('/api/paystack/verify/' + reference));
             const data = await res.json();
-            
             if (data.status === 'success') {
                 if (currentIsVipGroup) {
-                    alert('Payment of 100 GHS Successful! Redirecting you to the VIP WhatsApp Group...');
+                    alert('Payment Successful! Redirecting to VIP WhatsApp Group...');
                     window.open(VIP_WHATSAPP_LINK, '_blank');
                 } else {
-                    alert('Payment successful! Booking code unlocked.');
-                    location.reload(); 
+                    alert('Payment successful! Code unlocked.');
+                    location.reload();
                 }
-            } else {
-                alert('Payment verification failed.');
-            }
-        } catch (err) {
-            console.error('Payment verification error:', err);
-            alert('Error verifying transaction.');
-        }
+            } else { alert('Verification failed.'); }
+        } catch (err) { alert('Verification error.'); }
     }
 
-    // Load home tips
-    async function loadHomeTips() {
-        const container = document.getElementById('tipsContainer'); 
-        if (!container) return;
-
-        try {
-            const response = await fetch(getApiUrl('/api/tips'));
-            const tips = await response.json();
-
-            if (!Array.isArray(tips) || tips.length === 0) {
-                container.innerHTML = '<p style="color:var(--text-muted); font-weight:600; padding:20px 0;">No booking codes available today. Check back soon!</p>';
-                return;
-            }
-
-            container.innerHTML = tips.map(function(tip) {
-                const isVip = tip.type === 'vip' || tip.isVip || false;
-                const tipId = tip._id || tip.id || '';
-                const price = tip.price || 20; 
-                const bookmaker = tip.bookmaker || 'SPORTYBET';
-                const matches = tip.matchesCount || 'Matches Included';
-                const odds = tip.odds || '1.00';
-                const code = tip.code || 'N/A';
-
-                return `
-                    <div class="card ${isVip ? 'card-vip' : ''}">
-                        <div>
-                            <div class="card-header">
-                                <span class="bookmaker">${bookmaker}</span>
-                                <span class="${isVip ? 'tag-vip' : 'tag-free'}">
-                                    ${isVip ? 'HIGH ODDS VIP' : 'FREE TICKET'}
-                                </span>
-                            </div>
-                            <div class="odds-val">${odds} <span style="font-size:1rem; color:var(--text-muted); font-weight:600;">ODDS</span></div>
-                            <div class="matches-text">📌 ${matches} • Today</div>
-                        </div>
-                        
-                        <div>
-                            ${isVip ? `
-                                <button class="btn-vip-action" onclick="openPaymentModal('${tipId}', ${price}, false)">
-                                    🔒 Unlock Code for ${price} GHS
-                                </button>
-                            ` : `
-                                <div class="code-box">
-                                    <div>
-                                        <div style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">BOOKING CODE</div>
-                                        <div style="font-family:monospace; font-weight:900; font-size:1.2rem; color:var(--primary-emerald); letter-spacing:1px;">${code}</div>
-                                    </div>
-                                    <button style="background:#1e293b; border:1px solid var(--card-border); color:#fff; padding:8px 12px; border-radius:var(--radius-md); cursor:pointer; font-weight:700; font-size:0.8rem;" onclick="copyCode('${code}')">Copy 📋</button>
-                                </div>
-                            `}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-        } catch (err) {
-            console.error('Failed to load home tips:', err);
-            container.innerHTML = '<p style="color:#ef4444; font-weight:600; padding:20px 0;">Unable to connect to live server. Please refresh in a moment.</p>';
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', loadHomeTips);
-
-    // Canvas Background Animation
-    const canvas = document.getElementById('bgCanvas');
-    if (canvas) {
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        for (let i = 0; i < 40; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5
-            });
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'rgba(16, 185, 129, 0.3)';
-            particles.forEach(p => {
-                p.x += p.vx;
-                p.y += p.vy;
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-                ctx.fill();
-            });
-            requestAnimationFrame(animate);
-        }
-        animate();
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+        loadHomeTips();
+        startCountdown();
+    });
 
     function copyCode(code) {
         navigator.clipboard.writeText(code);
-        alert('Booking code ' + code + ' copied to clipboard!');
+        alert('Booking code ' + code + ' copied!');
     }
-
-    function openAdmin() {
-        window.location.href = 'admin.html';
-    }
+    function openAdmin() { window.location.href = 'admin.html'; }
 </script>
 </body>
 </html>
