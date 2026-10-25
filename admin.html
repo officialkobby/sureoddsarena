@@ -39,7 +39,33 @@
             pointer-events: none;
         }
 
-        .admin-container { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+        .admin-container { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; display: none; }
+        .admin-container.unlocked { display: block; }
+
+        /* Lock Screen Overlay */
+        .lock-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(7, 9, 14, 0.95);
+            backdrop-filter: blur(12px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .lock-overlay.hidden { display: none; }
+
+        .lock-box {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-xl);
+            padding: 30px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        }
 
         header {
             background: var(--card-bg);
@@ -54,7 +80,9 @@
         }
 
         .logo-text { font-weight: 900; font-size: 1.2rem; color: #fff; }
-        .btn-back { background: #1e293b; color: #fff; border: 1px solid var(--card-border); padding: 8px 14px; border-radius: var(--radius-md); text-decoration: none; font-size: 0.85rem; font-weight: 700; }
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        .btn-action { background: #1e293b; color: #fff; border: 1px solid var(--card-border); padding: 8px 14px; border-radius: var(--radius-md); text-decoration: none; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+        .btn-lock { background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.4); }
 
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
         @media(max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
@@ -89,17 +117,32 @@
 </head>
 <body>
 
-    <!-- Canvas Particle Network Background -->
     <canvas id="bgCanvas"></canvas>
 
-    <div class="admin-container">
+    <!-- Admin Password Lock Screen -->
+    <div id="lockOverlay" class="lock-overlay">
+        <div class="lock-box">
+            <h2 style="color:#fff; font-size:1.4rem; margin-bottom:6px;">🔒 Admin Locked</h2>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">Enter your secret admin password to access the portal.</p>
+            <form onsubmit="unlockAdmin(event)">
+                <input type="password" id="adminPasswordInput" class="form-input" placeholder="Enter admin password" style="margin-bottom:14px;" required>
+                <button type="submit" class="btn-submit">Unlock Portal</button>
+            </form>
+            <a href="index.html" style="display:block; margin-top:15px; color:var(--text-muted); font-size:0.8rem; text-decoration:none;">← Return to Home</a>
+        </div>
+    </div>
+
+    <!-- Main Admin Container (Hidden until unlocked) -->
+    <div id="adminContainer" class="admin-container">
         <header>
             <div class="logo-text">⚡ SOA Admin Control Panel</div>
-            <a href="index.html" class="btn-back">⬅ Back to Live Site</a>
+            <div class="header-actions">
+                <a href="index.html" class="btn-action">⬅ Home</a>
+                <button onclick="lockAdmin()" class="btn-action btn-lock">🔒 Lock Admin</button>
+            </div>
         </header>
 
         <div class="admin-grid">
-            <!-- 1. Post New Ticket Card -->
             <div class="admin-card">
                 <h3>📌 Publish Booking Code</h3>
                 <form id="tipForm" onsubmit="createTip(event)">
@@ -139,7 +182,6 @@
                 </form>
             </div>
 
-            <!-- 2. Site Settings Card -->
             <div class="admin-card">
                 <h3>⚙️ Global Platform Settings</h3>
                 <form id="settingsForm" onsubmit="saveSettings(event)">
@@ -156,7 +198,6 @@
             </div>
         </div>
 
-        <!-- Manage Active Tickets -->
         <div class="tips-list-card">
             <h3>📊 Active Published Tickets</h3>
             <div id="adminTipsList" style="margin-top: 14px;">
@@ -167,44 +208,69 @@
 
 <script>
     const API_BASE_URL = 'https://sureoddsarena.onrender.com';
+    const ADMIN_SECRET_PASSWORD = 'admin123'; // <--- CHANGE THIS TO YOUR OWN PASSWORD
+
     function getApiUrl(endpoint) {
         return (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
             ? `${API_BASE_URL}${endpoint}` : endpoint;
     }
 
-    // Canvas Background Animation
+    // Security Unlock / Lock Functions
+    function unlockAdmin(e) {
+        e.preventDefault();
+        const pass = document.getElementById('adminPasswordInput').value;
+        if (pass === ADMIN_SECRET_PASSWORD) {
+            sessionStorage.setItem('soa_admin_logged', 'true');
+            document.getElementById('lockOverlay').classList.add('hidden');
+            document.getElementById('adminContainer').classList.add('unlocked');
+            fetchAdminTips();
+        } else {
+            alert('Incorrect admin password!');
+            document.getElementById('adminPasswordInput').value = '';
+        }
+    }
+
+    function lockAdmin() {
+        sessionStorage.removeItem('soa_admin_logged');
+        document.getElementById('lockOverlay').classList.remove('hidden');
+        document.getElementById('adminContainer').classList.remove('unlocked');
+        document.getElementById('adminPasswordInput').value = '';
+    }
+
+    // Check login state on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        if (sessionStorage.getItem('soa_admin_logged') === 'true') {
+            document.getElementById('lockOverlay').classList.add('hidden');
+            document.getElementById('adminContainer').classList.add('unlocked');
+            fetchAdminTips();
+        }
+
+        if (localStorage.getItem('soa_timer_hours')) {
+            document.getElementById('timerHours').value = localStorage.getItem('soa_timer_hours');
+        }
+        if (localStorage.getItem('soa_announcement')) {
+            document.getElementById('announcementText').value = localStorage.getItem('soa_announcement');
+        }
+    });
+
     const canvas = document.getElementById('bgCanvas');
     if (canvas) {
         const ctx = canvas.getContext('2d');
         let particles = [];
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resize);
         resize();
-
         for (let i = 0; i < 40; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5
-            });
+            particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5 });
         }
-
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = 'rgba(16, 185, 129, 0.3)';
             particles.forEach(p => {
-                p.x += p.vx;
-                p.y += p.vy;
+                p.x += p.vx; p.y += p.vy;
                 if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
                 if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
             });
             requestAnimationFrame(animate);
         }
@@ -228,11 +294,11 @@
             container.innerHTML = tips.map(tip => `
                 <div class="tip-item">
                     <div class="tip-info">
-                        <h4>${tip.bookmaker || 'SPORTYBET'} — ${tip.odds} Odds (${tip.type.toUpperCase()})</h4>
+                        <h4>${tip.bookmaker || 'SPORTYBET'} — ${tip.odds} Odds (${(tip.type || 'free').toUpperCase()}) ${tip.won ? '✅ [WON]' : ''}</h4>
                         <p>Code: <b>${tip.code || 'N/A'}</b> | Matches: ${tip.matchesCount || 'N/A'}</p>
                     </div>
                     <div class="action-btns">
-                        <button class="btn-win" onclick="markAsWon('${tip._id || tip.id}')">Mark Won ✅</button>
+                        ${!tip.won ? `<button class="btn-win" onclick="markAsWon('${tip._id || tip.id}')">Mark Won ✅</button>` : '<span style="color:#34d399; font-weight:800; font-size:0.75rem; padding:6px 10px;">WON</span>'}
                         <button class="btn-del" onclick="deleteTip('${tip._id || tip.id}')">Delete 🗑️</button>
                     </div>
                 </div>
@@ -250,9 +316,9 @@
             price: document.getElementById('price').value,
             odds: document.getElementById('odds').value,
             matchesCount: document.getElementById('matchesCount').value,
-            code: document.getElementById('code').value
+            code: document.getElementById('code').value,
+            won: false
         };
-
         try {
             const res = await fetch(getApiUrl('/api/tips'), {
                 method: 'POST',
@@ -264,12 +330,8 @@
                 document.getElementById('tipForm').reset();
                 togglePriceField();
                 fetchAdminTips();
-            } else {
-                alert('Failed to publish code.');
-            }
-        } catch (err) {
-            alert('Server error connecting to backend.');
-        }
+            } else { alert('Failed to publish code.'); }
+        } catch (err) { alert('Server error connecting to backend.'); }
     }
 
     async function deleteTip(id) {
@@ -277,43 +339,33 @@
         try {
             await fetch(getApiUrl('/api/tips/' + id), { method: 'DELETE' });
             fetchAdminTips();
-        } catch (err) {
-            alert('Error deleting tip.');
-        }
+        } catch (err) { alert('Error deleting tip.'); }
     }
 
     async function markAsWon(id) {
         try {
-            await fetch(getApiUrl('/api/tips/' + id), {
+            const res = await fetch(getApiUrl('/api/tips/' + id), {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ won: true })
             });
-            alert('Tip marked as WON and moved to history!');
-            fetchAdminTips();
-        } catch (err) {
-            alert('Error updating tip status.');
-        }
+            if (res.ok) {
+                alert('Tip marked as WON!');
+                fetchAdminTips();
+            } else { alert('Failed to update status.'); }
+        } catch (err) { alert('Error updating status.'); }
     }
 
     function saveSettings(e) {
         e.preventDefault();
-        const hours = document.getElementById('timerHours').value;
+        const hours = parseInt(document.getElementById('timerHours').value) || 3;
         const announcement = document.getElementById('announcementText').value;
+        const targetTime = new Date().getTime() + (hours * 3600 * 1000);
+        localStorage.setItem('soa_countdown_target', targetTime);
         localStorage.setItem('soa_timer_hours', hours);
         localStorage.setItem('soa_announcement', announcement);
-        alert('Global platform settings updated successfully!');
+        alert('Settings saved!');
     }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        fetchAdminTips();
-        if (localStorage.getItem('soa_timer_hours')) {
-            document.getElementById('timerHours').value = localStorage.getItem('soa_timer_hours');
-        }
-        if (localStorage.getItem('soa_announcement')) {
-            document.getElementById('announcementText').value = localStorage.getItem('soa_announcement');
-        }
-    });
 </script>
 </body>
 </html>
