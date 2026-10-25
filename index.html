@@ -367,9 +367,10 @@
     </style>
 </head>
 <body class="theme-emerald">
+    <!-- Canvas Particle Network Background -->
     <canvas id="bgCanvas"></canvas>
 
-    <!-- 2. Live Winner Ticker Bar -->
+    <!-- Live Winner Ticker Bar -->
     <div class="winner-ticker" id="winnerTicker">
         🔥 Loading recent winners activity...
     </div>
@@ -382,7 +383,6 @@
                 <span>SURE ODDS ARENA</span>
             </a>
             <div class="nav-right">
-                <!-- 6. Neon Theme Accent Switcher -->
                 <div class="theme-switcher">
                     <button class="theme-btn" style="background:#10b981;" onclick="setTheme('emerald')" title="Emerald"></button>
                     <button class="theme-btn" style="background:#f59e0b;" onclick="setTheme('gold')" title="Gold"></button>
@@ -394,7 +394,7 @@
     </header>
 
     <div class="app-container">
-        <!-- Hero Header & 1. Countdown Timer -->
+        <!-- Hero Header & Countdown Timer -->
         <div class="hero">
             <h1>TODAY'S BOOKING CODES</h1>
             <p>FREE & HIGH ODDS VIP TICKETS</p>
@@ -408,14 +408,14 @@
             <h2>Join Our Winning Betting Community</h2>
             <p>We provide accurate sports betting booking codes daily. Join our channels or unlock the official **VIP WhatsApp Group** for premium daily slips!</p>
             <div class="community-buttons">
-                <a href="https://chat.whatsapp.com/I6BBPnVsTHcAIfvkDExlCO" target="_blank" class="btn-social btn-whatsapp">💬 Free WhatsApp</a>
+                <a href="https://chat.whatsapp.com/BYChhpMVlPlAET2J6xWu6W" target="_blank" class="btn-social btn-whatsapp">💬 Free WhatsApp</a>
                 <a href="https://t.me/your-telegram" target="_blank" class="btn-social btn-telegram">✈️ Free Telegram</a>
                 <button onclick="openPaymentModal('VIP_GROUP_MEMBERSHIP', 100, true)" class="btn-social btn-vip-group">🔒 Join VIP Group (100 GHS)</button>
                 <button onclick="openGuideModal()" class="btn-social btn-guide">❓ How It Works</button>
             </div>
         </div>
 
-        <!-- 4. Filter Tabs & 3. History Toggle -->
+        <!-- Filter Tabs & History Toggle -->
         <div class="controls-row">
             <div class="filter-tabs">
                 <button class="tab-btn active" onclick="filterBookmaker('ALL')">All Codes</button>
@@ -461,7 +461,7 @@
         </div>
     </div>
 
-    <!-- 5. "How It Works" Guide Modal -->
+    <!-- "How It Works" Guide Modal -->
     <div id="guideModalOverlay" class="modal-overlay">
         <div class="modal-box">
             <button class="btn-close" onclick="closeGuideModal()">✕</button>
@@ -495,7 +495,7 @@
 <script>
     const API_BASE_URL = 'https://sureoddsarena.onrender.com';
     const PAYSTACK_PUBLIC_KEY = 'pk_live_YOUR_PAYSTACK_PUBLIC_KEY_HERE';
-    const VIP_WHATSAPP_LINK = 'https://chat.whatsapp.com/BYChhpMVlPlAET2J6xWu6W';
+    const VIP_WHATSAPP_LINK = 'https://chat.whatsapp.com/I6BBPnVsTHcAIfvkDExlCO';
 
     let allLoadedTips = [];
     let currentFilter = 'ALL';
@@ -510,19 +510,59 @@
             ? `${API_BASE_URL}${endpoint}` : endpoint;
     }
 
-    // 1. Countdown Timer Logic
+    // Canvas Background Particle Animation
+    const canvas = document.getElementById('bgCanvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        for (let i = 0; i < 40; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.3)';
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    }
+
+    // Countdown Timer Logic
     function startCountdown() {
-        let timeLeft = 3 * 3600 + 45 * 60 + 12; // 3h 45m 12s
+        let timeLeft = 3 * 3600 + 45 * 60 + 12;
         setInterval(() => {
             if (timeLeft > 0) timeLeft--;
             let h = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
             let m = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
             let s = (timeLeft % 60).toString().padStart(2, '0');
-            document.getElementById('countdownTimer').textContent = `${h}h ${m}m ${s}s`;
+            const timerEl = document.getElementById('countdownTimer');
+            if (timerEl) timerEl.textContent = `${h}h ${m}m ${s}s`;
         }, 1000);
     }
 
-    // 2. Recent Winners Ticker
+    // Recent Winners Ticker
     const winners = [
         "🎉 Kofi from Kumasi just unlocked 20 Odds VIP (SportyBet)",
         "💰 Yaw from Accra successfully joined the VIP WhatsApp Group",
@@ -532,12 +572,14 @@
     let tickerIndex = 0;
     function rotateTicker() {
         const ticker = document.getElementById('winnerTicker');
-        ticker.textContent = winners[tickerIndex];
-        tickerIndex = (tickerIndex + 1) % winners.length;
+        if (ticker) {
+            ticker.textContent = winners[tickerIndex];
+            tickerIndex = (tickerIndex + 1) % winners.length;
+        }
     }
     setInterval(rotateTicker, 4000);
 
-    // 6. Theme Switcher
+    // Theme Switcher
     function setTheme(theme) {
         document.body.className = 'theme-' + theme;
     }
@@ -562,7 +604,6 @@
         if (net === 'at') document.getElementById('netAt').classList.add('selected');
     }
 
-    // 4. Filter Bookmaker Function
     function filterBookmaker(bookmaker) {
         currentFilter = bookmaker;
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -570,7 +611,6 @@
         renderTips();
     }
 
-    // 3. Toggle History Mode (Yesterday's Won Tips)
     function toggleHistoryMode() {
         showingHistory = !showingHistory;
         const btn = document.getElementById('historyToggleBtn');
@@ -578,7 +618,6 @@
         renderTips();
     }
 
-    // Load Tips from API
     async function loadHomeTips() {
         const container = document.getElementById('tipsContainer');
         if (!container) return;
@@ -591,7 +630,6 @@
         }
     }
 
-    // Render Function incorporating filters and history
     function renderTips() {
         const container = document.getElementById('tipsContainer');
         if (!container) return;
@@ -599,7 +637,6 @@
         let displayTips = [...allLoadedTips];
 
         if (showingHistory) {
-            // Mock history data for demonstration of past won games
             displayTips = [
                 { _id: 'hist1', bookmaker: 'SPORTYBET', odds: '15.50', matchesCount: '10 Matches', code: 'WON778', type: 'vip', won: true },
                 { _id: 'hist2', bookmaker: '1XBET', odds: '8.20', matchesCount: '5 Matches', code: 'WON992', type: 'free', won: true }
@@ -665,7 +702,6 @@
         }).join('');
     }
 
-    // Paystack Checkout
     async function processMoMoCheckout() {
         const phone = document.getElementById('momoPhoneInput').value.trim();
         if (!phone || phone.length < 9) { alert("Please enter a valid phone number."); return; }
